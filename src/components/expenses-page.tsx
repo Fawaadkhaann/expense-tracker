@@ -16,13 +16,14 @@ import {
 
 import { signOut } from "@/actions/auth";
 import type { Expense } from "@/types/expense";
-import { ExpenseFilters, type Filters } from "@/components/expense-filters";
+import {
+  ExpenseFilters,
+  type Filters,
+} from "@/components/expense-filters";
 import { ExpenseForm } from "@/components/expense-form";
 import { ExpenseList } from "@/components/expense-list";
-import { MonthlyChart } from "@/components/monthly-chart";
-import { SpendingStats } from "@/components/spending-stats";
 
-export function Dashboard({
+export function ExpensesPage({
   expenses,
   email,
 }: {
@@ -40,6 +41,7 @@ export function Dashboard({
 
   const filtered = useMemo(() => {
     return expenses.filter((expense) => {
+      // Category filter
       if (
         filters.category !== "all" &&
         expense.category !== filters.category
@@ -47,11 +49,29 @@ export function Dashboard({
         return false;
       }
 
-      if (filters.from && expense.expense_date < filters.from) {
+      // From date filter
+      if (
+        filters.from &&
+        expense.expense_date < filters.from
+      ) {
         return false;
       }
 
-      if (filters.to && expense.expense_date > filters.to) {
+      // To date filter
+      if (
+        filters.to &&
+        expense.expense_date > filters.to
+      ) {
+        return false;
+      }
+
+      // Search filter
+      if (
+        filters.search &&
+        !expense.description
+          ?.toLowerCase()
+          .includes(filters.search.toLowerCase())
+      ) {
         return false;
       }
 
@@ -65,7 +85,6 @@ export function Dashboard({
 
         {/* Sidebar */}
         <aside className="hidden w-64 shrink-0 border-r border-line bg-card lg:flex lg:flex-col">
-
           <div className="flex h-20 items-center gap-3 border-b border-line px-6">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-ink text-card">
               <Wallet className="h-5 w-5" />
@@ -83,39 +102,26 @@ export function Dashboard({
           </div>
 
           <nav className="flex-1 space-y-1 p-4">
-
             <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-muted">
               Workspace
             </p>
 
-            {/* Dashboard */}
-            <button
-              type="button"
-              className="flex w-full items-center gap-3 rounded-xl bg-ink px-3 py-2.5 text-sm font-medium text-card"
+            <Link
+              href="/dashboard"
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition hover:bg-canvas hover:text-ink"
             >
               <LayoutDashboard className="h-4 w-4" />
               Dashboard
-            </button>
+            </Link>
 
-            {/* Expenses */}
             <Link
               href="/expenses"
-              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition hover:bg-canvas hover:text-ink"
+              className="flex w-full items-center gap-3 rounded-xl bg-ink px-3 py-2.5 text-sm font-medium text-card"
             >
               <Receipt className="h-4 w-4" />
               Expenses
             </Link>
 
-            {/* Budget */}
-            <Link
-              href="/budget"
-              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition hover:bg-canvas hover:text-ink"
-            >
-              <Wallet className="h-4 w-4" />
-              Budget
-            </Link>
-
-            {/* Analytics */}
             <button
               type="button"
               className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition hover:bg-canvas hover:text-ink"
@@ -124,7 +130,6 @@ export function Dashboard({
               Analytics
             </button>
 
-            {/* Reports */}
             <button
               type="button"
               className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition hover:bg-canvas hover:text-ink"
@@ -132,12 +137,9 @@ export function Dashboard({
               <FileText className="h-4 w-4" />
               Reports
             </button>
-
           </nav>
 
           <div className="border-t border-line p-4">
-
-            {/* Settings */}
             <button
               type="button"
               className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition hover:bg-canvas hover:text-ink"
@@ -146,8 +148,10 @@ export function Dashboard({
               Settings
             </button>
 
-            {/* Log out */}
-            <form action={signOut} className="mt-1">
+            <form
+              action={signOut}
+              className="mt-1"
+            >
               <button
                 type="submit"
                 className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition hover:bg-canvas hover:text-ink"
@@ -156,25 +160,23 @@ export function Dashboard({
                 Log out
               </button>
             </form>
-
           </div>
         </aside>
 
-        {/* Main content */}
+        {/* Main area */}
         <div className="min-w-0 flex-1">
 
-          {/* Top bar */}
+          {/* Header */}
           <header className="sticky top-0 z-30 border-b border-line bg-card/90 backdrop-blur">
-
             <div className="flex h-20 items-center justify-between px-5 sm:px-8">
 
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-muted">
-                  Overview
+                  Transactions
                 </p>
 
                 <h1 className="mt-1 text-xl font-semibold tracking-tight">
-                  Dashboard
+                  Expenses
                 </h1>
               </div>
 
@@ -210,48 +212,30 @@ export function Dashboard({
             </div>
           </header>
 
-          {/* Dashboard */}
-          <main className="mx-auto w-full max-w-7xl space-y-8 p-5 sm:p-8">
+          {/* Content */}
+          <main className="mx-auto w-full max-w-7xl space-y-6 p-5 sm:p-8">
 
-            {/* Welcome */}
+            {/* Page introduction */}
             <section>
-              <p className="text-sm text-muted">
-                Here's an overview of your spending activity.
+              <h2 className="text-2xl font-semibold tracking-tight">
+                All expenses
+              </h2>
+
+              <p className="mt-1 text-sm text-muted">
+                View, filter, and manage your transactions.
               </p>
-            </section>
-
-            {/* Statistics */}
-            <section>
-              <SpendingStats expenses={filtered} />
-            </section>
-
-            {/* Chart */}
-            <section className="rounded-2xl border border-line bg-card p-5 shadow-sm sm:p-6">
-
-              <div className="mb-5">
-                <h2 className="text-base font-semibold">
-                  Spending overview
-                </h2>
-
-                <p className="mt-1 text-sm text-muted">
-                  Track how your expenses change over time.
-                </p>
-              </div>
-
-              <MonthlyChart expenses={expenses} />
-
             </section>
 
             {/* Filters */}
             <section className="rounded-2xl border border-line bg-card p-5 shadow-sm sm:p-6">
 
               <div className="mb-5">
-                <h2 className="text-base font-semibold">
-                  Transactions
-                </h2>
+                <h3 className="text-base font-semibold">
+                  Filter expenses
+                </h3>
 
                 <p className="mt-1 text-sm text-muted">
-                  Filter your expenses to find exactly what you're looking for.
+                  Narrow down your transactions by category, search, or date.
                 </p>
               </div>
 
@@ -262,9 +246,29 @@ export function Dashboard({
 
             </section>
 
-            {/* Expense list */}
-            <section>
+            {/* Results */}
+            <section className="rounded-2xl border border-line bg-card p-5 shadow-sm sm:p-6">
+
+              <div className="mb-5 flex items-center justify-between gap-4">
+
+                <div>
+                  <h3 className="text-base font-semibold">
+                    Transactions
+                  </h3>
+
+                  <p className="mt-1 text-sm text-muted">
+                    {filtered.length}{" "}
+                    {filtered.length === 1
+                      ? "expense"
+                      : "expenses"}{" "}
+                    found
+                  </p>
+                </div>
+
+              </div>
+
               <ExpenseList expenses={filtered} />
+
             </section>
 
           </main>
@@ -309,7 +313,6 @@ export function Dashboard({
           </div>
         </div>
       ) : null}
-
     </div>
   );
 }
