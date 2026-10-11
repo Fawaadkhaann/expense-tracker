@@ -22,8 +22,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      data-theme="light"
+      suppressHydrationWarning
       className={`${outfit.variable} ${fraunces.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var theme=localStorage.getItem("ledger-theme");if(theme==="dark"||theme==="light")document.documentElement.dataset.theme=theme}catch{}`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-canvas text-ink">
         {children}
       </body>

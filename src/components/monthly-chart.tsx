@@ -43,15 +43,15 @@ export function MonthlyChart({ expenses }: { expenses: Expense[] }) {
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-              <CartesianGrid stroke="#e4d9c8" vertical={false} />
+              <CartesianGrid stroke="var(--line)" vertical={false} />
               <XAxis
                 dataKey="month"
-                tick={{ fill: "#6f655c", fontSize: 12 }}
+                tick={{ fill: "var(--muted)", fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fill: "#6f655c", fontSize: 12 }}
+                tick={{ fill: "var(--muted)", fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={(value: number) =>
@@ -59,18 +59,18 @@ export function MonthlyChart({ expenses }: { expenses: Expense[] }) {
                 }
               />
               <Tooltip
-                cursor={{ fill: "#f3eee4" }}
+                cursor={{ fill: "var(--canvas)" }}
                 formatter={(value) => [
                   formatCurrency(Number(value ?? 0)),
                   "Spent",
                 ]}
                 contentStyle={{
                   borderRadius: 16,
-                  border: "1px solid #e4d9c8",
-                  background: "#fffaf3",
+                  border: "1px solid var(--line)",
+                  background: "var(--card)",
                 }}
               />
-              <Bar dataKey="total" fill="#1d6b58" radius={[10, 10, 0, 0]} />
+              <Bar dataKey="total" fill="var(--accent)" radius={[10, 10, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

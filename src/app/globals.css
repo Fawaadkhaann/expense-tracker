@@ -9,6 +9,28 @@
   --accent: #1d6b58;
   --accent-soft: #d7efe6;
   --warm: #c45c26;
+  --chart-grid: #e4d9c8;
+  --chart-text: #6f655c;
+  --chart-cursor: #f3eee4;
+  --chart-tooltip: #fffaf3;
+  --chart-tooltip-border: #e4d9c8;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas: #0b1422;
+  --ink: #e7edf5;
+  --muted: #a5b2c4;
+  --card: #131f30;
+  --line: #2b3a4f;
+  --accent: #48c49a;
+  --accent-soft: #173d37;
+  --warm: #f0a36c;
+  --chart-grid: #2b3a4f;
+  --chart-text: #a5b2c4;
+  --chart-cursor: #1b2a3d;
+  --chart-tooltip: #131f30;
+  --chart-tooltip-border: #40536c;
 }
 
 @theme inline {
@@ -34,4 +56,69 @@ h1,
 h2,
 .display {
   font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+}
+
+:root[data-theme="dark"] body {
+  color-scheme: dark;
+}
+
+:root[data-theme="dark"] .bg-slate-50 {
+  background-color: var(--canvas);
+}
+
+:root[data-theme="dark"] .bg-white,
+:root[data-theme="dark"] [class~="bg-white/90"] {
+  background-color: var(--card);
+}
+
+:root[data-theme="dark"] .bg-slate-100 {
+  background-color: #1b2a3d;
+}
+
+:root[data-theme="dark"] .text-slate-900,
+:root[data-theme="dark"] .text-slate-800,
+:root[data-theme="dark"] .text-slate-700 {
+  color: var(--ink);
+}
+
+:root[data-theme="dark"] .text-slate-500,
+:root[data-theme="dark"] .text-slate-400,
+:root[data-theme="dark"] .text-slate-300,
+:root[data-theme="dark"] .text-gray-500 {
+  color: var(--muted);
+}
+
+:root[data-theme="dark"] .border-slate-200,
+:root[data-theme="dark"] .border-slate-100,
+:root[data-theme="dark"] [class~="border-slate-200/80"] {
+  border-color: var(--line);
+}
+
+:root[data-theme="dark"] .bg-emerald-50 {
+  background-color: #173d37;
+}
+
+:root[data-theme="dark"] .bg-red-50,
+:root[data-theme="dark"] [class~="hover:bg-red-50"]:hover {
+  background-color: #3b202b;
+}
+
+:root[data-theme="dark"] .text-red-800,
+:root[data-theme="dark"] .text-red-600,
+:root[data-theme="dark"] [class~="hover:text-red-800"]:hover {
+  color: #ffb4ab;
+}
+
+:root[data-theme="dark"] .bg-accent.text-white {
+  color: #071710;
+}
+
+.theme-icon-sun,
+:root[data-theme="dark"] .theme-icon-moon {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-icon-sun,
+.theme-icon-moon {
+  display: block;
 }

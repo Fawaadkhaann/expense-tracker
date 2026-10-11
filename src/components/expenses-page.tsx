@@ -9,6 +9,7 @@ import {
   LogOut,
   Plus,
   Receipt,
+  Repeat,
   Settings,
   Wallet,
   X,
@@ -106,6 +107,7 @@ export function ExpensesPage({
               Workspace
             </p>
 
+            {/* Dashboard */}
             <Link
               href="/dashboard"
               className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition hover:bg-canvas hover:text-ink"
@@ -114,6 +116,7 @@ export function ExpensesPage({
               Dashboard
             </Link>
 
+            {/* Expenses */}
             <Link
               href="/expenses"
               className="flex w-full items-center gap-3 rounded-xl bg-ink px-3 py-2.5 text-sm font-medium text-card"
@@ -122,6 +125,25 @@ export function ExpensesPage({
               Expenses
             </Link>
 
+            {/* Budget */}
+            <Link
+              href="/budget"
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition hover:bg-canvas hover:text-ink"
+            >
+              <Wallet className="h-4 w-4" />
+              Budget
+            </Link>
+
+            {/* Recurring */}
+            <Link
+              href="/recurring"
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition hover:bg-canvas hover:text-ink"
+            >
+              <Repeat className="h-4 w-4" />
+              Recurring
+            </Link>
+
+            {/* Analytics */}
             <button
               type="button"
               className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition hover:bg-canvas hover:text-ink"
@@ -130,6 +152,7 @@ export function ExpensesPage({
               Analytics
             </button>
 
+            {/* Reports */}
             <button
               type="button"
               className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition hover:bg-canvas hover:text-ink"
@@ -140,6 +163,8 @@ export function ExpensesPage({
           </nav>
 
           <div className="border-t border-line p-4">
+
+            {/* Settings */}
             <button
               type="button"
               className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted transition hover:bg-canvas hover:text-ink"
@@ -148,6 +173,7 @@ export function ExpensesPage({
               Settings
             </button>
 
+            {/* Log out */}
             <form
               action={signOut}
               className="mt-1"
@@ -160,6 +186,7 @@ export function ExpensesPage({
                 Log out
               </button>
             </form>
+
           </div>
         </aside>
 
