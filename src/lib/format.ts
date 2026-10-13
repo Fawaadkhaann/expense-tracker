@@ -1,9 +1,18 @@
-export function formatCurrency(amount: number, currency = "USD") {
-  return new Intl.NumberFormat("en-US", {
+export function formatCurrency(amount: number) {
+  const parts = new Intl.NumberFormat("en-PK", {
     style: "currency",
-    currency,
+    currency: "PKR",
+    currencyDisplay: "code",
     maximumFractionDigits: 2,
-  }).format(amount);
+  }).formatToParts(amount);
+
+  const value = parts
+    .filter((part) => part.type !== "currency")
+    .map((part) => part.value)
+    .join("")
+    .trim();
+
+  return `Rs. ${value}`;
 }
 
 export function formatDate(isoDate: string) {

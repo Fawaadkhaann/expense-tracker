@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { saveMonthlyBudget } from "@/actions/budget";
+import { formatCurrency } from "@/lib/format";
 
 type Budget = {
   id: string;
@@ -11,12 +12,10 @@ type Budget = {
 
 export function BudgetPage({
   budget,
-  email,
   month,
   totalSpent,
 }: {
   budget: Budget;
-  email: string;
   month: string;
   totalSpent: number;
 }) {
@@ -70,16 +69,13 @@ export function BudgetPage({
   }
 
   return (
-    <main className="min-h-screen bg-canvas p-6">
-      <div className="mx-auto max-w-4xl space-y-6">
+    <div className="space-y-6">
 
         {/* Header */}
         <div>
-          <p className="text-sm text-muted">{email}</p>
-
-          <h1 className="mt-1 text-3xl font-semibold">
+          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
             Monthly Budget
-          </h1>
+          </h2>
 
           <p className="mt-2 text-muted">
             Set your spending limit for {monthLabel}.
@@ -90,39 +86,39 @@ export function BudgetPage({
         <section className="grid gap-4 sm:grid-cols-3">
 
           {/* Budget */}
-          <div className="rounded-3xl border border-line bg-card p-5 shadow-sm">
-            <p className="text-sm text-muted">
+          <div className="ledger-card p-5">
+            <p className="text-sm font-medium text-muted">
               Monthly Budget
             </p>
 
             <p className="mt-2 text-2xl font-semibold">
-              Rs. {budgetAmount.toLocaleString()}
+              {formatCurrency(budgetAmount)}
             </p>
           </div>
 
           {/* Spent */}
-          <div className="rounded-3xl border border-line bg-card p-5 shadow-sm">
-            <p className="text-sm text-muted">
+          <div className="ledger-card p-5">
+            <p className="text-sm font-medium text-muted">
               Total Spent
             </p>
 
             <p className="mt-2 text-2xl font-semibold">
-              Rs. {totalSpent.toLocaleString()}
+              {formatCurrency(totalSpent)}
             </p>
           </div>
 
           {/* Remaining */}
-          <div className="rounded-3xl border border-line bg-card p-5 shadow-sm">
-            <p className="text-sm text-muted">
+          <div className="ledger-card p-5">
+            <p className="text-sm font-medium text-muted">
               Remaining
             </p>
 
             <p
               className={`mt-2 text-2xl font-semibold ${
-                remaining < 0 ? "text-red-600" : ""
+                remaining < 0 ? "text-danger" : ""
               }`}
             >
-              Rs. {remaining.toLocaleString()}
+              {formatCurrency(remaining)}
             </p>
           </div>
 
@@ -130,7 +126,7 @@ export function BudgetPage({
 
         {/* Progress */}
         {budgetAmount > 0 && (
-          <section className="rounded-3xl border border-line bg-card p-6 shadow-sm">
+          <section className="ledger-card p-6">
 
             <div className="flex items-center justify-between">
               <div>
@@ -144,20 +140,25 @@ export function BudgetPage({
               </div>
 
               <span className="text-sm font-medium">
-                Rs. {totalSpent.toLocaleString()} /{" "}
-                Rs. {budgetAmount.toLocaleString()}
+                {formatCurrency(totalSpent)} / {formatCurrency(budgetAmount)}
               </span>
             </div>
 
             <div className="mt-4 h-3 overflow-hidden rounded-full bg-line">
               <div
-                className="h-full rounded-full bg-accent transition-all"
+                className={`h-full rounded-full transition-[width] duration-500 motion-reduce:transition-none ${
+                  progress >= 100
+                    ? "bg-danger"
+                    : progress >= 75
+                      ? "bg-warm"
+                      : "bg-accent"
+                }`}
                 style={{ width: `${progress}%` }}
               />
             </div>
 
             {remaining < 0 && (
-              <p className="mt-3 text-sm font-medium text-red-600">
+              <p className="mt-3 text-sm font-medium text-danger">
                 You have exceeded your monthly budget.
               </p>
             )}
@@ -166,7 +167,7 @@ export function BudgetPage({
         )}
 
         {/* Set Budget */}
-        <section className="rounded-3xl border border-line bg-card p-6 shadow-sm">
+        <section className="ledger-card p-6">
 
           <div className="space-y-5">
 
@@ -183,12 +184,12 @@ export function BudgetPage({
             <div>
               <label
                 htmlFor="budget"
-                className="mb-2 block text-sm font-medium"
+                className="mb-2 block text-sm font-medium text-ink"
               >
                 Budget amount
               </label>
 
-              <div className="flex items-center rounded-2xl border border-line bg-canvas px-4">
+              <div className="flex items-center rounded-xl border border-line bg-canvas px-4 transition-colors focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/20 motion-reduce:transition-none">
                 <span className="text-muted">
                   Rs.
                 </span>
@@ -203,7 +204,7 @@ export function BudgetPage({
                   onChange={(event) =>
                     setAmount(event.target.value)
                   }
-                  className="w-full bg-transparent px-3 py-3 outline-none"
+                  className="w-full bg-transparent px-3 py-3 text-ink outline-none placeholder:text-muted"
                 />
               </div>
             </div>
@@ -212,13 +213,20 @@ export function BudgetPage({
               type="button"
               onClick={handleSave}
               disabled={saving}
-              className="rounded-2xl bg-accent px-5 py-3 font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              className="ledger-button"
             >
               {saving ? "Saving..." : "Save Budget"}
             </button>
 
             {message && (
-              <p className="text-sm text-muted">
+              <p
+                className={`text-sm ${
+                  message.includes("successfully")
+                    ? "text-success"
+                    : "text-danger"
+                }`}
+                role="status"
+              >
                 {message}
               </p>
             )}
@@ -227,7 +235,6 @@ export function BudgetPage({
 
         </section>
 
-      </div>
-    </main>
+    </div>
   );
 }

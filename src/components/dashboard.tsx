@@ -1,25 +1,16 @@
-
 "use client";
 
+import { motion } from "motion/react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
-  BarChart3,
-  FileText,
-  LayoutDashboard,
-  LogOut,
-  Moon,
+  CircleAlert,
   Plus,
   Receipt,
-  Repeat,
-  Settings,
-  Sun,
   Wallet,
-  X,
-  Sparkles,
 } from "lucide-react";
 
-import { signOut } from "@/actions/auth";
+import { AppShell } from "@/components/app-shell";
 import type { Expense } from "@/types/expense";
 import {
   ExpenseFilters,
@@ -29,22 +20,19 @@ import { ExpenseForm } from "@/components/expense-form";
 import { ExpenseList } from "@/components/expense-list";
 import { MonthlyChart } from "@/components/monthly-chart";
 import { SpendingStats } from "@/components/spending-stats";
-
-const navigation = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Expenses", href: "/expenses", icon: Receipt },
-  { label: "Budget", href: "/budget", icon: Wallet },
-  { label: "Recurring", href: "/recurring", icon: Repeat },
-  { label: "Analytics", href: "/analytics", icon: BarChart3 },
-  { label: "Reports", href: "/reports", icon: FileText },
-];
+import { formatCurrency, formatMonth } from "@/lib/format";
+import { Dialog } from "@/components/dialog";
 
 export function Dashboard({
   expenses,
   email,
+  month,
+  monthlyBudget,
 }: {
   expenses: Expense[];
   email: string;
+  month: string;
+  monthlyBudget: number | null;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -76,11 +64,11 @@ export function Dashboard({
 
       if (searchText) {
         const description = String(
-          expense.description ?? ""
+          expense.description ?? "",
         ).toLowerCase();
 
         const category = String(
-          expense.category ?? ""
+          expense.category ?? "",
         ).toLowerCase();
 
         if (
@@ -95,297 +83,466 @@ export function Dashboard({
     });
   }, [expenses, filters]);
 
-  function toggleTheme() {
-    const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = nextTheme;
-    try {
-      localStorage.setItem("ledger-theme", nextTheme);
-    } catch {
-      // Keep the current page theme if browser storage is unavailable.
-    }
-  }
+  const currentMonth = month.slice(0, 7);
+
+  const monthlySpending = expenses
+    .filter((expense) =>
+      expense.expense_date.startsWith(currentMonth),
+    )
+    .reduce(
+      (total, expense) => total + Number(expense.amount),
+      0,
+    );
+
+  const hasMonthlyBudget =
+    monthlyBudget !== null &&
+    Number.isFinite(monthlyBudget) &&
+    monthlyBudget > 0;
+
+  const budgetUsed = hasMonthlyBudget
+    ? (monthlySpending / monthlyBudget) * 100
+    : 0;
+
+  const budgetRemaining = hasMonthlyBudget
+    ? monthlyBudget - monthlySpending
+    : null;
+
+  const alertLevel = !hasMonthlyBudget
+    ? "unset"
+    : budgetUsed > 100
+      ? "exceeded"
+      : budgetUsed >= 90
+        ? "critical"
+        : budgetUsed >= 75
+          ? "warning"
+          : "on-track";
+
+  const alertCopy = {
+    unset: {
+      title: "Set a monthly budget to enable spending alerts",
+      message:
+        "Your spending this month is tracked below. Add a budget to see how much remains and get alerts at 75%, 90%, and beyond your limit.",
+    },
+    exceeded: {
+      title: "Monthly budget exceeded",
+      message: `You are ${formatCurrency(
+        Math.abs(budgetRemaining ?? 0),
+      )} over your ${formatMonth(currentMonth)} budget. Review your recent spending to get back on track.`,
+    },
+    critical: {
+      title: "You're approaching your monthly limit",
+      message: `You've used ${budgetUsed.toFixed(
+        1,
+      )}% of your budget. Only ${formatCurrency(
+        budgetRemaining ?? 0,
+      )} remains for ${formatMonth(currentMonth)}.`,
+    },
+    warning: {
+      title: "Spending alert: 75% of budget used",
+      message: `You've used ${budgetUsed.toFixed(
+        1,
+      )}% of your budget, with ${formatCurrency(
+        budgetRemaining ?? 0,
+      )} remaining for ${formatMonth(currentMonth)}.`,
+    },
+    "on-track": {
+      title: "You're on track this month",
+      message: `${formatCurrency(
+        budgetRemaining ?? 0,
+      )} remains in your ${formatMonth(currentMonth)} budget.`,
+    },
+  }[alertLevel];
+
+  const budgetCardClass =
+    "rounded-xl border border-line bg-canvas p-4 transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-md";
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <div className="flex min-h-screen">
-        {/* Sidebar */}
-        <aside className="hidden w-64 shrink-0 border-r border-slate-800 bg-slate-950 text-white lg:flex lg:flex-col">
-          {/* Brand */}
-          <div className="flex h-20 items-center gap-3 border-b border-white/10 px-6">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20">
-              <Wallet className="h-6 w-6" />
-            </div>
+    <AppShell
+      activePath="/dashboard"
+      email={email}
+      actions={
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="ledger-button min-h-10 shrink-0 px-3 sm:px-4"
+        >
+          <Plus className="h-4 w-4" />
+          <span className="hidden sm:inline">Add expense</span>
+          <span className="sm:hidden">Add</span>
+        </button>
+      }
+    >
+      <div className="space-y-7">
+        {/* Animated welcome section */}
+        <motion.section
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.65, ease: "easeOut" }}
+          className="relative isolate overflow-hidden rounded-2xl border border-line bg-card p-6 shadow-sm sm:p-8"
+        >
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-12 -top-16 -z-10 h-56 w-56 rounded-full bg-accent-soft opacity-80 blur-3xl"
+          />
 
-            <div>
-              <p className="text-lg font-bold tracking-tight">
-                Ledger<span className="text-emerald-400">.</span>
-              </p>
-              <p className="text-xs text-slate-400">
-                Personal finance
-              </p>
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <nav className="flex-1 space-y-2 px-4 py-7">
-            <p className="mb-4 px-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-              Workspace
-            </p>
-
-            {navigation.map((item) => {
-              const Icon = item.icon;
-              const active = item.label === "Dashboard";
-
-              return (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className={`group flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition-all duration-200 ${
-                    active
-                      ? "bg-emerald-400 font-semibold text-slate-950 shadow-md shadow-emerald-950/20"
-                      : "text-slate-400 hover:bg-white/5 hover:text-white"
-                  }`}
-                >
-                  <Icon className="h-5 w-5 shrink-0" />
-                  <span>{item.label}</span>
-
-                  {active && (
-                    <span className="ml-auto h-2 w-2 rounded-full bg-slate-950" />
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Sidebar footer */}
-          <div className="border-t border-white/10 p-4">
-            <div className="mb-4 rounded-2xl bg-white/5 p-4">
-              <div className="mb-2 flex items-center gap-2 text-emerald-400">
-                <Sparkles className="h-4 w-4" />
-                <span className="text-xs font-semibold">
-                  Your finances, simplified
-                </span>
-              </div>
-              <p className="text-xs leading-5 text-slate-400">
-                Keep track of your spending and build better money habits.
-              </p>
-            </div>
-
-            <Link
-              href="/settings"
-              className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-slate-400 transition hover:bg-white/5 hover:text-white"
-            >
-              <Settings className="h-5 w-5" />
-              Settings
-            </Link>
-
-            <form action={signOut} className="mt-1">
-              <button
-                type="submit"
-                className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-slate-400 transition hover:bg-red-500/10 hover:text-red-300"
+          <div className="relative flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
+            <div className="max-w-2xl">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.45,
+                  delay: 0.15,
+                  ease: "easeOut",
+                }}
+                className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent-soft px-3 py-1.5"
               >
-                <LogOut className="h-5 w-5" />
-                Log out
-              </button>
-            </form>
-          </div>
-        </aside>
-
-        {/* Main content */}
-        <div className="min-w-0 flex-1">
-          {/* Top bar */}
-          <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
-            <div className="flex min-h-20 items-center justify-between gap-4 px-5 py-3 sm:px-8">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">
-                  Personal finance
+                <span className="h-2 w-2 rounded-full bg-accent" />
+                <p className="text-xs font-semibold tracking-wide text-accent">
+                  PERSONAL FINANCE
                 </p>
-                <h1 className="mt-1 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
-                  Dashboard
-                </h1>
-              </div>
+              </motion.div>
 
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-                  aria-label="Toggle dark mode"
-                  title="Toggle dark mode"
-                >
-                  <Sun className="theme-icon-sun h-5 w-5" />
-                  <Moon className="theme-icon-moon h-5 w-5" />
-                </button>
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.45,
+                  delay: 0.25,
+                  ease: "easeOut",
+                }}
+                className="mt-5 text-sm font-medium text-muted"
+              >
+                {formatMonth(currentMonth)}
+              </motion.p>
 
-                <div className="hidden max-w-56 text-right md:block">
-                  <p className="truncate text-sm font-semibold text-slate-800">
-                    {email}
-                  </p>
-                  <p className="mt-0.5 text-xs text-slate-500">
-                    Your account
-                  </p>
-                </div>
+              <motion.h2
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.5,
+                  delay: 0.3,
+                  ease: "easeOut",
+                }}
+                className="mt-1 text-3xl font-semibold tracking-tight text-ink sm:text-4xl"
+              >
+                Welcome back
+              </motion.h2>
 
-                <div className="hidden h-10 w-10 items-center justify-center rounded-full bg-emerald-100 font-bold text-emerald-800 md:flex">
-                  {email ? email.charAt(0).toUpperCase() : "U"}
-                </div>
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.5,
+                  delay: 0.4,
+                  ease: "easeOut",
+                }}
+                className="mt-3 max-w-lg text-sm leading-6 text-muted sm:text-base"
+              >
+                Take control of your money. Review your spending,
+                track your budget, and make smarter financial decisions.
+              </motion.p>
 
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.5,
+                  delay: 0.5,
+                  ease: "easeOut",
+                }}
+                className="mt-6 flex flex-wrap items-center gap-3"
+              >
                 <button
                   type="button"
                   onClick={() => setOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/10 transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                  className="ledger-button min-h-11 px-5"
                 >
                   <Plus className="h-4 w-4" />
-                  <span className="hidden sm:inline">Add expense</span>
-                  <span className="sm:hidden">Add</span>
+                  Add an expense
                 </button>
+
+                <Link
+                  href="/analytics"
+                  className="ledger-button-secondary min-h-11"
+                >
+                  View analytics
+                </Link>
+              </motion.div>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{
+                duration: 0.55,
+                delay: 0.3,
+                ease: "easeOut",
+              }}
+              aria-hidden="true"
+              className="hidden h-24 w-24 shrink-0 items-center justify-center rounded-3xl border border-accent/15 bg-accent-soft text-accent sm:flex"
+            >
+              <Wallet className="h-12 w-12" strokeWidth={1.5} />
+            </motion.div>
+          </div>
+        </motion.section>
+
+        {/* Smart spending alert */}
+        <section
+          aria-labelledby="spending-alert-title"
+          aria-live="polite"
+          role={alertLevel === "exceeded" ? "alert" : "status"}
+          className="ledger-card overflow-hidden"
+        >
+          <div
+            className="border-l-4 p-5 sm:p-7"
+            style={{
+              borderLeftColor:
+                alertLevel === "exceeded"
+                  ? "var(--danger)"
+                  : alertLevel === "critical" ||
+                      alertLevel === "warning"
+                    ? "var(--warm)"
+                    : "var(--accent)",
+            }}
+          >
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+              <div className="flex min-w-0 items-start gap-4">
+                <div
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-accent-soft text-accent"
+                  aria-hidden="true"
+                >
+                  {alertLevel === "warning" ||
+                  alertLevel === "critical" ||
+                  alertLevel === "exceeded" ? (
+                    <CircleAlert className="h-5 w-5" />
+                  ) : (
+                    <Wallet className="h-5 w-5" />
+                  )}
+                </div>
+
+                <div className="min-w-0">
+                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-accent">
+                    Smart spending alert · {formatMonth(currentMonth)}
+                  </p>
+
+                  <h2
+                    id="spending-alert-title"
+                    className={`mt-1 text-lg font-semibold tracking-tight sm:text-xl ${
+                      alertLevel === "exceeded"
+                        ? "text-danger"
+                        : alertLevel === "critical" ||
+                            alertLevel === "warning"
+                          ? "text-warm"
+                          : "text-ink"
+                    }`}
+                  >
+                    {alertCopy.title}
+                  </h2>
+
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
+                    {alertCopy.message}
+                  </p>
+                </div>
+              </div>
+
+              <Link
+                href="/budget"
+                className="ledger-button-secondary shrink-0"
+              >
+                {hasMonthlyBudget ? "Manage budget" : "Set a budget"}
+              </Link>
+            </div>
+
+            <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <div className={budgetCardClass}>
+                <p className="text-xs font-medium text-muted">
+                  Monthly budget
+                </p>
+                <p className="mt-1.5 break-words text-lg font-bold text-ink">
+                  {hasMonthlyBudget
+                    ? formatCurrency(monthlyBudget)
+                    : "Not set"}
+                </p>
+              </div>
+
+              <div className={budgetCardClass}>
+                <p className="text-xs font-medium text-muted">
+                  Amount spent
+                </p>
+                <p className="mt-1.5 break-words text-lg font-bold text-ink">
+                  {formatCurrency(monthlySpending)}
+                </p>
+              </div>
+
+              <div className={budgetCardClass}>
+                <p className="text-xs font-medium text-muted">
+                  {budgetRemaining !== null && budgetRemaining < 0
+                    ? "Amount over budget"
+                    : "Remaining"}
+                </p>
+
+                <p
+                  className="mt-1.5 break-words text-lg font-bold"
+                  style={{
+                    color:
+                      budgetRemaining !== null && budgetRemaining < 0
+                        ? "var(--danger)"
+                        : "var(--ink)",
+                  }}
+                >
+                  {budgetRemaining === null
+                    ? "—"
+                    : `${budgetRemaining < 0 ? "−" : ""}${formatCurrency(
+                        Math.abs(budgetRemaining),
+                      )}`}
+                </p>
+              </div>
+
+              <div className={budgetCardClass}>
+                <p className="text-xs font-medium text-muted">
+                  Budget used
+                </p>
+                <p className="mt-1.5 break-words text-lg font-bold text-ink">
+                  {hasMonthlyBudget ? `${budgetUsed.toFixed(1)}%` : "—"}
+                </p>
               </div>
             </div>
-          </header>
 
-          {/* Dashboard content */}
-          <main className="mx-auto w-full max-w-7xl space-y-7 p-5 sm:p-8">
-            {/* Welcome banner */}
-            <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 p-6 text-white shadow-xl shadow-slate-900/10 sm:p-8">
-              <div className="pointer-events-none absolute -right-12 -top-20 h-64 w-64 rounded-full bg-emerald-400/10 blur-3xl" />
-              <div className="pointer-events-none absolute -bottom-24 right-1/3 h-48 w-48 rounded-full bg-teal-400/10 blur-3xl" />
-
-              <div className="relative z-10 max-w-2xl">
-                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-200">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Your financial overview
-                </div>
-
-                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                  Welcome back!
-                </h2>
-
-                <p className="mt-3 max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
-                  Keep your expenses organized, understand your spending,
-                  and stay on top of your financial goals.
-                </p>
-
-                <button
-                  type="button"
-                  onClick={() => setOpen(true)}
-                  className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-400 px-4 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-300"
+            {hasMonthlyBudget && (
+              <div className="mt-5">
+                <div
+                  className="h-2.5 overflow-hidden rounded-full bg-line"
+                  role="progressbar"
+                  aria-label="Monthly budget used"
+                  aria-valuenow={Math.min(Math.round(budgetUsed), 100)}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
                 >
-                  <Plus className="h-4 w-4" />
-                  Record an expense
-                </button>
-              </div>
-            </section>
+                  <div
+                    className="h-full rounded-full transition-[width] duration-500"
+                    style={{
+                      width: `${Math.min(budgetUsed, 100)}%`,
+                      backgroundColor:
+                        alertLevel === "exceeded"
+                          ? "var(--danger)"
+                          : alertLevel === "critical" ||
+                              alertLevel === "warning"
+                            ? "var(--warm)"
+                            : "var(--accent)",
+                    }}
+                  />
+                </div>
 
-            {/* Statistics */}
-            <section className="space-y-4">
+                <div className="mt-2 flex flex-wrap justify-between gap-2 text-xs text-muted">
+                  <span>Alerts at 75% and 90%</span>
+                  <span>100% of budget</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Spending statistics */}
+        <section className="space-y-5">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-accent">
+                At a glance
+              </p>
+
+              <h2 className="mt-1 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+                Your finances
+              </h2>
+
+              <p className="mt-1.5 text-sm text-muted">
+                A snapshot of your spending activity.
+              </p>
+            </div>
+
+            <span className="rounded-full border border-accent/20 bg-accent-soft px-3 py-1.5 text-xs font-semibold text-accent">
+              {filtered.length}{" "}
+              {filtered.length === 1 ? "expense" : "expenses"} in view
+            </span>
+          </div>
+
+          <SpendingStats expenses={filtered} />
+        </section>
+
+        {/* Monthly chart and expense filters */}
+        <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(20rem,0.85fr)]">
+          <div>
+            <MonthlyChart expenses={expenses} />
+          </div>
+
+          <section className="ledger-card p-5 transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-md sm:p-6">
+            <div className="mb-5 flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-white">
+                <Receipt className="h-5 w-5" />
+              </div>
+
               <div>
-                <h2 className="text-lg font-bold text-slate-900">
-                  Your finances
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-accent">
+                  Your activity
+                </p>
+
+                <h2 className="mt-1 text-xl font-bold tracking-tight text-ink">
+                  Find a transaction
                 </h2>
-                <p className="mt-1 text-sm text-slate-500">
-                  A snapshot of your spending activity.
+
+                <p className="mt-1 text-sm text-muted">
+                  Search and filter your expenses.
                 </p>
               </div>
+            </div>
 
-              <div className="rounded-2xl [&>div]:gap-4">
-                <SpendingStats expenses={filtered} />
-              </div>
-            </section>
-
-            {/* Monthly chart */}
-            <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-shadow hover:shadow-md sm:p-7">
-              <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h2 className="text-lg font-bold text-slate-900">
-                    Spending overview
-                  </h2>
-                  <p className="mt-1 text-sm text-slate-500">
-                    Track how your expenses change over time.
-                  </p>
-                </div>
-
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
-                  <BarChart3 className="h-5 w-5" />
-                </div>
-              </div>
-
-              <MonthlyChart expenses={expenses} />
-            </section>
-
-            {/* Filters */}
-            <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-7">
-              <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h2 className="text-lg font-bold text-slate-900">
-                    Transactions
-                  </h2>
-                  <p className="mt-1 text-sm text-slate-500">
-                    Search and filter your expenses.
-                  </p>
-                </div>
-
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-                  <Receipt className="h-5 w-5" />
-                </div>
-              </div>
-
-              <ExpenseFilters
-                value={filters}
-                onChange={setFilters}
-              />
-            </section>
-
-            {/* Expense list */}
-            <section className="overflow-hidden rounded-2xl">
-              <ExpenseList expenses={filtered} />
-            </section>
-
-            <footer className="border-t border-slate-200 pt-5 text-center text-xs text-slate-500">
-              Ledger Personal Finance
-              <span className="mx-2">·</span>
-              Manage your money with clarity.
-            </footer>
-          </main>
+            <ExpenseFilters value={filters} onChange={setFilters} />
+          </section>
         </div>
+
+        {/* Recent transactions */}
+        <section className="space-y-5">
+          <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-accent">
+                Transactions
+              </p>
+
+              <h2 className="mt-1 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+                Recent activity
+              </h2>
+
+              <p className="mt-1.5 text-sm text-muted">
+                Your matching transactions, grouped by date.
+              </p>
+            </div>
+
+            <p className="rounded-full border border-line bg-card px-3.5 py-2 text-sm font-semibold text-ink shadow-sm">
+              {filtered.length}{" "}
+              {filtered.length === 1 ? "transaction" : "transactions"}
+            </p>
+          </div>
+
+          <ExpenseList expenses={filtered} />
+        </section>
+
+        <footer className="border-t border-line pt-5 text-center text-xs text-muted">
+          Ledger Personal Finance
+          <span className="mx-2">·</span>
+          Manage your money with clarity.
+        </footer>
       </div>
 
       {/* Add expense modal */}
       {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/60 p-3 backdrop-blur-sm sm:items-center sm:p-6"
-          onClick={(event) => {
-            if (event.target === event.currentTarget) {
-              setOpen(false);
-            }
-          }}
+        <Dialog
+          title="Add expense"
+          description="Record a new transaction."
+          onClose={() => setOpen(false)}
         >
-          <div className="w-full max-w-lg overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
-              <div>
-                <h2 className="text-xl font-bold tracking-tight text-slate-900">
-                  Add expense
-                </h2>
-                <p className="mt-1 text-sm text-slate-500">
-                  Record a new transaction.
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
-                aria-label="Close add expense form"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="p-6">
-              <ExpenseForm onDone={() => setOpen(false)} />
-            </div>
-          </div>
-        </div>
+          <ExpenseForm onDone={() => setOpen(false)} />
+        </Dialog>
       )}
-    </div>
+    </AppShell>
   );
 }

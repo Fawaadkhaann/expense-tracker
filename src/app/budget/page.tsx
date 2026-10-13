@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient, hasSupabaseConfig } from "@/lib/supabase/server";
 import { getMonthlyBudget } from "@/actions/budget";
 import { getExpenses } from "@/actions/expenses";
+import { AppShell } from "@/components/app-shell";
 import { BudgetPage } from "@/components/budget-page";
 
 export const dynamic = "force-dynamic";
@@ -36,11 +37,12 @@ export default async function BudgetRoute() {
   );
 
   return (
-    <BudgetPage
-      budget={budget}
-      email={user.email ?? ""}
-      month={currentMonth}
-      totalSpent={totalSpent}
-    />
+    <AppShell activePath="/budget" email={user.email ?? ""}>
+      <BudgetPage
+        budget={budget}
+        month={currentMonth}
+        totalSpent={totalSpent}
+      />
+    </AppShell>
   );
 }

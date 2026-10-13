@@ -67,7 +67,7 @@ export function RecurringExpenseForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-3xl border border-line bg-card p-6 shadow-sm"
+      className="ledger-card p-5 sm:p-6"
     >
       <div className="mb-6">
         <h2 className="text-xl font-semibold">
@@ -85,7 +85,7 @@ export function RecurringExpenseForm() {
         <div className="sm:col-span-2">
           <label
             htmlFor="description"
-            className="mb-2 block text-sm font-medium"
+            className="mb-2 block text-sm font-medium text-ink"
           >
             Description
           </label>
@@ -96,7 +96,7 @@ export function RecurringExpenseForm() {
             placeholder="Netflix subscription"
             value={description}
             onChange={(event) => setDescription(event.target.value)}
-            className="w-full rounded-2xl border border-line bg-canvas px-4 py-3 outline-none focus:border-ink"
+            className="ledger-field"
           />
         </div>
 
@@ -104,12 +104,12 @@ export function RecurringExpenseForm() {
         <div>
           <label
             htmlFor="amount"
-            className="mb-2 block text-sm font-medium"
+            className="mb-2 block text-sm font-medium text-ink"
           >
             Amount
           </label>
 
-          <div className="flex items-center rounded-2xl border border-line bg-canvas px-4">
+          <div className="flex items-center rounded-xl border border-line bg-canvas px-4 transition-colors focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/20 motion-reduce:transition-none">
             <span className="text-muted">Rs.</span>
 
             <input
@@ -120,7 +120,7 @@ export function RecurringExpenseForm() {
               placeholder="1500"
               value={amount}
               onChange={(event) => setAmount(event.target.value)}
-              className="w-full bg-transparent px-3 py-3 outline-none"
+              className="w-full bg-transparent px-3 py-3 text-ink outline-none placeholder:text-muted"
             />
           </div>
         </div>
@@ -129,7 +129,7 @@ export function RecurringExpenseForm() {
         <div>
           <label
             htmlFor="category"
-            className="mb-2 block text-sm font-medium"
+            className="mb-2 block text-sm font-medium text-ink"
           >
             Category
           </label>
@@ -140,7 +140,7 @@ export function RecurringExpenseForm() {
             onChange={(event) =>
               setCategory(event.target.value as Category)
             }
-            className="w-full rounded-2xl border border-line bg-canvas px-4 py-3 outline-none"
+            className="ledger-field"
           >
             {CATEGORIES.map((item) => (
               <option key={item} value={item}>
@@ -154,7 +154,7 @@ export function RecurringExpenseForm() {
         <div>
           <label
             htmlFor="frequency"
-            className="mb-2 block text-sm font-medium"
+            className="mb-2 block text-sm font-medium text-ink"
           >
             Frequency
           </label>
@@ -167,7 +167,7 @@ export function RecurringExpenseForm() {
                 event.target.value as RecurringFrequency
               )
             }
-            className="w-full rounded-2xl border border-line bg-canvas px-4 py-3 outline-none"
+            className="ledger-field"
           >
             <option value="weekly">Weekly</option>
             <option value="monthly">Monthly</option>
@@ -179,7 +179,7 @@ export function RecurringExpenseForm() {
         <div>
           <label
             htmlFor="nextDate"
-            className="mb-2 block text-sm font-medium"
+            className="mb-2 block text-sm font-medium text-ink"
           >
             Next date
           </label>
@@ -189,7 +189,7 @@ export function RecurringExpenseForm() {
             type="date"
             value={nextDate}
             onChange={(event) => setNextDate(event.target.value)}
-            className="w-full rounded-2xl border border-line bg-canvas px-4 py-3 outline-none"
+            className="ledger-field"
           />
         </div>
       </div>
@@ -197,13 +197,18 @@ export function RecurringExpenseForm() {
       <button
         type="submit"
         disabled={saving}
-        className="mt-6 rounded-2xl bg-accent px-5 py-3 font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+        className="ledger-button mt-6"
       >
         {saving ? "Adding..." : "Add recurring expense"}
       </button>
 
       {message && (
-        <p className="mt-4 text-sm text-muted">
+        <p
+          className={`mt-4 text-sm ${
+            message.includes("successfully") ? "text-success" : "text-danger"
+          }`}
+          role="status"
+        >
           {message}
         </p>
       )}

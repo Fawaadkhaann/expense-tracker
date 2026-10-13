@@ -23,28 +23,28 @@ export function AuthForm({
     <form action={formAction} className="space-y-4">
       {nextPath ? <input type="hidden" name="next" value={nextPath} /> : null}
       <label className="block space-y-1.5">
-        <span className="text-sm text-muted">Email</span>
+        <span className="text-sm font-medium text-ink">Email</span>
         <input
           required
           type="email"
           name="email"
           autoComplete="email"
-          className="w-full rounded-2xl border border-line bg-canvas px-4 py-3 outline-none ring-accent focus:ring-2"
+          className="ledger-field"
         />
       </label>
       <label className="block space-y-1.5">
-        <span className="text-sm text-muted">Password</span>
+        <span className="text-sm font-medium text-ink">Password</span>
         <input
           required
           minLength={6}
           type="password"
           name="password"
           autoComplete={mode === "login" ? "current-password" : "new-password"}
-          className="w-full rounded-2xl border border-line bg-canvas px-4 py-3 outline-none ring-accent focus:ring-2"
+          className="ledger-field"
         />
       </label>
       {state?.error ? (
-        <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-800">
+        <p className="ledger-error" role="alert">
           {state.error}
         </p>
       ) : null}
@@ -56,7 +56,7 @@ export function AuthForm({
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-full bg-ink py-3 text-sm font-medium text-card transition hover:bg-accent disabled:opacity-60"
+        className="ledger-button w-full"
       >
         {pending
           ? "Please wait…"

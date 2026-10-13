@@ -13,16 +13,16 @@ export type Category = (typeof CATEGORIES)[number];
 
 export const CATEGORY_META: Record<
   Category,
-  { label: string; color: string; bg: string }
+  { label: string }
 > = {
-  food: { label: "Food", color: "#c45c26", bg: "#f8e4d6" },
-  transport: { label: "Transport", color: "#2f5d8c", bg: "#dce8f5" },
-  shopping: { label: "Shopping", color: "#7a3ea8", bg: "#eadcf4" },
-  bills: { label: "Bills", color: "#1d6b58", bg: "#d7efe6" },
-  entertainment: { label: "Entertainment", color: "#9a6b12", bg: "#f6e7c4" },
-  health: { label: "Health", color: "#b03a4a", bg: "#f6dce0" },
-  education: { label: "Education", color: "#355f8a", bg: "#d9e6f4" },
-  other: { label: "Other", color: "#5f574e", bg: "#e8e2d8" },
+  food: { label: "Food" },
+  transport: { label: "Transport" },
+  shopping: { label: "Shopping" },
+  bills: { label: "Bills" },
+  entertainment: { label: "Entertainment" },
+  health: { label: "Health" },
+  education: { label: "Education" },
+  other: { label: "Other" },
 };
 
 export function isCategory(value: string): value is Category {

@@ -22,9 +22,9 @@ export function ExpenseFilters({
   onChange: (next: Filters) => void;
 }) {
   return (
-    <div className="space-y-4 rounded-3xl border border-line bg-card p-4">
+    <div className="space-y-4">
       {/* Search */}
-      <label className="space-y-1.5">
+      <label className="block space-y-1.5">
         <span className="text-sm text-muted">
           Search expenses
         </span>
@@ -42,7 +42,7 @@ export function ExpenseFilters({
                 search: event.target.value,
               })
             }
-            className="w-full rounded-2xl border border-line bg-canvas py-2.5 pl-10 pr-3 outline-none ring-accent focus:ring-2"
+            className="ledger-field py-2.5 pl-10 pr-3"
           />
         </div>
       </label>
@@ -50,7 +50,7 @@ export function ExpenseFilters({
       {/* Filters */}
       <div className="grid gap-3 sm:grid-cols-3">
         {/* Category */}
-        <label className="space-y-1.5">
+        <label className="block space-y-1.5">
           <span className="text-sm text-muted">
             Category
           </span>
@@ -63,7 +63,7 @@ export function ExpenseFilters({
                 category: event.target.value as Filters["category"],
               })
             }
-            className="w-full rounded-2xl border border-line bg-canvas px-3 py-2.5 outline-none ring-accent focus:ring-2"
+            className="ledger-field px-3 py-2.5"
           >
             <option value="all">All categories</option>
 
@@ -76,7 +76,7 @@ export function ExpenseFilters({
         </label>
 
         {/* From */}
-        <label className="space-y-1.5">
+        <label className="block space-y-1.5">
           <span className="text-sm text-muted">
             From
           </span>
@@ -90,12 +90,12 @@ export function ExpenseFilters({
                 from: event.target.value,
               })
             }
-            className="w-full rounded-2xl border border-line bg-canvas px-3 py-2.5 outline-none ring-accent focus:ring-2"
+            className="ledger-field px-3 py-2.5"
           />
         </label>
 
         {/* To */}
-        <label className="space-y-1.5">
+        <label className="block space-y-1.5">
           <span className="text-sm text-muted">
             To
           </span>
@@ -109,7 +109,7 @@ export function ExpenseFilters({
                 to: event.target.value,
               })
             }
-            className="w-full rounded-2xl border border-line bg-canvas px-3 py-2.5 outline-none ring-accent focus:ring-2"
+            className="ledger-field px-3 py-2.5"
           />
         </label>
       </div>

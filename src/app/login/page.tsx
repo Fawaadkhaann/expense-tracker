@@ -10,18 +10,22 @@ export default async function LoginPage({
   const params = await searchParams;
 
   return (
-    <div className="flex min-h-full items-center justify-center px-4 py-16">
-      <div className="w-full max-w-md rounded-[2rem] border border-line bg-card p-8 shadow-[0_20px_60px_-32px_rgba(28,23,18,0.45)]">
-        <Link href="/" className="mb-8 flex items-center gap-2 text-accent">
-          <Wallet className="h-5 w-5" />
-          <span className="font-semibold text-ink">Ledger</span>
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-10">
+      <div className="w-full max-w-md rounded-2xl border border-line bg-card p-6 shadow-sm sm:p-8">
+        <Link href="/" className="mb-8 inline-flex items-center gap-3 text-accent">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-white">
+            <Wallet className="h-5 w-5" />
+          </span>
+          <span className="text-lg font-semibold tracking-tight text-ink">
+            Ledger
+          </span>
         </Link>
-        <h1 className="display text-3xl">Welcome back</h1>
-        <p className="mt-2 mb-8 text-muted">
+        <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
+        <p className="mb-7 mt-2 text-sm leading-6 text-muted">
           Log in to add expenses and see your monthly totals.
         </p>
         {params.error ? (
-          <p className="mb-4 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-800">
+          <p className="ledger-error mb-4" role="alert">
             {params.error}
           </p>
         ) : null}

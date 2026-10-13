@@ -1,14 +1,11 @@
+
 import type { Metadata } from "next";
-import { Fraunces, Outfit } from "next/font/google";
+import Script from "next/script";
+import { Outfit } from "next/font/google";
 import "./globals.css";
 
 const outfit = Outfit({
   variable: "--font-outfit",
-  subsets: ["latin"],
-});
-
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
   subsets: ["latin"],
 });
 
@@ -24,16 +21,20 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       data-theme="light"
       suppressHydrationWarning
-      className={`${outfit.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${outfit.variable} h-full antialiased`}
     >
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `try{var theme=localStorage.getItem("ledger-theme");if(theme==="dark"||theme==="light")document.documentElement.dataset.theme=theme}catch{}`,
-          }}
-        />
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`try {
+            var theme = localStorage.getItem("ledger-theme");
+            if (theme === "dark" || theme === "light") {
+              document.documentElement.dataset.theme = theme;
+            }
+          } catch {}`}
+        </Script>
       </head>
-      <body className="min-h-full flex flex-col bg-canvas text-ink">
+
+      <body className="flex min-h-full flex-col bg-canvas text-ink">
         {children}
       </body>
     </html>

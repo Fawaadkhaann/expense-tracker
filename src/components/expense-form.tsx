@@ -48,7 +48,7 @@ export function ExpenseForm({
             step="0.01"
             defaultValue={expense?.amount}
             placeholder="0.00"
-            className="w-full rounded-2xl border border-line bg-canvas px-4 py-3 outline-none ring-accent focus:ring-2"
+            className="ledger-field"
           />
         </label>
         <label className="space-y-1.5">
@@ -58,7 +58,7 @@ export function ExpenseForm({
             name="expense_date"
             type="date"
             defaultValue={expense?.expense_date ?? todayISO()}
-            className="w-full rounded-2xl border border-line bg-canvas px-4 py-3 outline-none ring-accent focus:ring-2"
+            className="ledger-field"
           />
         </label>
       </div>
@@ -68,7 +68,7 @@ export function ExpenseForm({
           required
           name="category"
           defaultValue={expense?.category ?? "food"}
-          className="w-full rounded-2xl border border-line bg-canvas px-4 py-3 outline-none ring-accent focus:ring-2"
+          className="ledger-field"
         >
           {CATEGORIES.map((category) => (
             <option key={category} value={category}>
@@ -83,18 +83,18 @@ export function ExpenseForm({
           name="description"
           defaultValue={expense?.description ?? ""}
           placeholder="Lunch, train ticket, new shoes…"
-          className="w-full rounded-2xl border border-line bg-canvas px-4 py-3 outline-none ring-accent focus:ring-2"
+          className="ledger-field"
         />
       </label>
       {state?.error ? (
-        <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-800">
+        <p className="ledger-error" role="alert">
           {state.error}
         </p>
       ) : null}
       <button
         type="submit"
         disabled={pending}
-        className="rounded-full bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-ink disabled:opacity-60"
+        className="ledger-button"
       >
         {pending
           ? "Saving…"
