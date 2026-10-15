@@ -1,12 +1,11 @@
-
 import {
-  BellRing,
   Check,
   Clock3,
   Mail,
   Send,
   ShieldCheck,
   Settings2,
+  AlertCircle,
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import {
@@ -14,6 +13,7 @@ import {
   hasSupabaseConfig,
 } from "@/lib/supabase/server";
 import { AppShell } from "@/components/app-shell";
+import EmailComposer from "@/components/email-composer";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +27,21 @@ export default async function NotificationsPage() {
   } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
+
+  // Load this user's email activity
+  const {
+    data: activities,
+    error: activityError,
+  } = await supabase
+    .from("email_activity")
+    .select("id, recipient, subject, status, created_at")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  const emailActivities = activities ?? [];
+  const totalSent = emailActivities.filter(
+    (activity) => activity.status === "sent"
+  ).length;
 
   return (
     <AppShell
@@ -47,14 +62,13 @@ export default async function NotificationsPage() {
             </h2>
 
             <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
-              Manage email messages and prepare financial updates
-              from one simple workspace.
+              Manage email messages and review your sent email history.
             </p>
           </div>
 
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-line bg-card px-3.5 py-2 text-xs font-medium text-muted">
-            <span className="h-2 w-2 rounded-full bg-warm" />
-            Email service not connected
+            <span className="h-2 w-2 rounded-full bg-green-500" />
+            Email service connected
           </div>
         </section>
 
@@ -69,12 +83,12 @@ export default async function NotificationsPage() {
             </div>
 
             <div>
-              <p className="text-sm text-muted">Email delivery</p>
+              <p className="text-sm text-muted">Emails sent</p>
               <p className="mt-1 text-base font-semibold text-ink">
-                Not configured
+                {totalSent}
               </p>
               <p className="mt-1 text-xs text-muted">
-                Provider setup required
+                Successfully sent and recorded
               </p>
             </div>
           </div>
@@ -103,16 +117,16 @@ export default async function NotificationsPage() {
             <div>
               <p className="text-sm text-muted">Security</p>
               <p className="mt-1 text-base font-semibold text-ink">
-                Server-side setup
+                Server-side sending
               </p>
               <p className="mt-1 text-xs text-muted">
-                Credentials must stay private
+                Provider credentials stay private
               </p>
             </div>
           </div>
         </section>
 
-        {/* Composer and setup panel */}
+        {/* Email composer and setup panel */}
         <section className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
           <div className="ledger-card overflow-hidden">
             <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-5 sm:px-7">
@@ -132,116 +146,21 @@ export default async function NotificationsPage() {
               </div>
 
               <span className="inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1.5 text-xs text-muted">
-                <span className="h-1.5 w-1.5 rounded-full bg-warm" />
-                Not sent
+                <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                Ready to send
               </span>
             </div>
 
-            <form className="space-y-5 p-5 sm:p-7">
-              <div>
-                <label
-                  htmlFor="recipient"
-                  className="mb-2 block text-sm font-medium text-ink"
-                >
-                  To
-                </label>
-
-                <input
-                  id="recipient"
-                  name="recipient"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="Enter recipient email address"
-                  className="ledger-field"
-                  disabled
-                  aria-describedby="email-disabled-note"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="subject"
-                  className="mb-2 block text-sm font-medium text-ink"
-                >
-                  Subject
-                </label>
-
-                <input
-                  id="subject"
-                  name="subject"
-                  type="text"
-                  placeholder="Enter a clear subject line"
-                  className="ledger-field"
-                  disabled
-                />
-              </div>
-
-              <div>
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <label
-                    htmlFor="message"
-                    className="text-sm font-medium text-ink"
-                  >
-                    Message
-                  </label>
-
-                  <span className="text-xs text-muted">
-                    Plain text
-                  </span>
-                </div>
-
-                <textarea
-                  id="message"
-                  name="message"
-                  rows={8}
-                  placeholder="Write your message here..."
-                  className="ledger-field resize-y leading-6"
-                  disabled
-                />
-              </div>
-
-              <div
-                id="email-disabled-note"
-                className="flex items-start gap-3 rounded-xl border border-line bg-canvas p-4"
-              >
-                <BellRing
-                  size={17}
-                  className="mt-0.5 shrink-0 text-muted"
-                />
-
-                <div>
-                  <p className="text-sm font-medium text-ink">
-                    Email sending is not set up yet
-                  </p>
-                  <p className="mt-1 text-xs leading-5 text-muted">
-                    Connect an email provider and implement secure
-                    server-side sending before enabling this form.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-xs leading-5 text-muted">
-                  Your message will not be sent from this page yet.
-                </p>
-
-                <button
-                  type="button"
-                  disabled
-                  className="ledger-button w-full sm:w-auto"
-                >
-                  <Send size={15} />
-                  Send email
-                </button>
-              </div>
-            </form>
+            <div className="p-5 sm:p-7">
+              <EmailComposer />
+            </div>
           </div>
 
           {/* Setup information */}
           <aside className="space-y-5">
             <div className="ledger-card p-5">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-warm-soft text-warm">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent">
                   <Settings2 size={18} />
                 </div>
 
@@ -250,24 +169,23 @@ export default async function NotificationsPage() {
                     Email configuration
                   </h3>
                   <p className="mt-1 text-xs text-muted">
-                    Setup status
+                    Integration status
                   </p>
                 </div>
               </div>
 
               <div className="mt-5 space-y-4">
                 <div className="flex items-start gap-3">
-                  <Clock3
+                  <Check
                     size={16}
-                    className="mt-0.5 shrink-0 text-muted"
+                    className="mt-0.5 shrink-0 text-green-500"
                   />
                   <div>
                     <p className="text-sm font-medium text-ink">
                       Provider connection
                     </p>
                     <p className="mt-1 text-xs leading-5 text-muted">
-                      An email service such as Resend needs to be
-                      configured.
+                      Resend is configured and has sent a test email.
                     </p>
                   </div>
                 </div>
@@ -282,8 +200,7 @@ export default async function NotificationsPage() {
                       Secure delivery
                     </p>
                     <p className="mt-1 text-xs leading-5 text-muted">
-                      Store provider credentials in server-only
-                      environment variables.
+                      Provider credentials remain on the server.
                     </p>
                   </div>
                 </div>
@@ -294,8 +211,8 @@ export default async function NotificationsPage() {
                   <span className="text-xs text-muted">
                     Integration status
                   </span>
-                  <span className="text-xs font-semibold text-warm">
-                    Pending
+                  <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+                    Configured
                   </span>
                 </div>
               </div>
@@ -309,12 +226,10 @@ export default async function NotificationsPage() {
 
                 <div>
                   <h3 className="text-sm font-semibold text-ink">
-                    Next steps
+                    Email activity tracking
                   </h3>
                   <p className="mt-2 text-xs leading-5 text-muted">
-                    Connect the provider, add a secure sending
-                    endpoint, and test delivery before enabling
-                    the composer.
+                    Sent email details are saved in your Supabase database.
                   </p>
                 </div>
               </div>
@@ -322,37 +237,114 @@ export default async function NotificationsPage() {
           </aside>
         </section>
 
-        {/* Activity empty state */}
+        {/* Email activity history */}
         <section className="ledger-card overflow-hidden">
-          <div className="flex items-center gap-3 border-b border-line px-5 py-5 sm:px-6">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent">
-              <Clock3 size={18} />
+          <div className="flex flex-col justify-between gap-3 border-b border-line px-5 py-5 sm:flex-row sm:items-center sm:px-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent">
+                <Clock3 size={18} />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold text-ink">
+                  Email activity
+                </h3>
+                <p className="mt-1 text-xs text-muted">
+                  Your recently sent emails
+                </p>
+              </div>
             </div>
 
-            <div>
-              <h3 className="text-sm font-semibold text-ink">
-                Email activity
-              </h3>
-              <p className="mt-1 text-xs text-muted">
-                Review message history and delivery status
+            <span className="w-fit rounded-full border border-line px-3 py-1.5 text-xs text-muted">
+              {emailActivities.length}{" "}
+              {emailActivities.length === 1 ? "record" : "records"}
+            </span>
+          </div>
+
+          {activityError ? (
+            <div className="px-5 py-10 text-center">
+              <AlertCircle
+                size={22}
+                className="mx-auto text-red-500"
+              />
+              <p className="mt-3 text-sm font-medium text-ink">
+                Could not load email activity
+              </p>
+              <p className="mt-2 text-xs text-muted">
+                Please refresh the page and try again.
               </p>
             </div>
-          </div>
+          ) : emailActivities.length === 0 ? (
+            <div className="px-5 py-10 text-center sm:py-12">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-line bg-canvas text-muted">
+                <Mail size={20} />
+              </div>
 
-          <div className="px-5 py-10 text-center sm:py-12">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-line bg-canvas text-muted">
-              <Mail size={20} />
+              <h4 className="mt-4 text-sm font-semibold text-ink">
+                No email activity yet
+              </h4>
+
+              <p className="mx-auto mt-2 max-w-md text-xs leading-5 text-muted">
+                Send an email using the form above. Its activity will appear here when saved successfully.
+              </p>
             </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[600px] text-left">
+                <thead>
+                  <tr className="border-b border-line bg-canvas/60">
+                    <th className="px-5 py-3 text-xs font-medium text-muted sm:px-6">
+                      Recipient
+                    </th>
+                    <th className="px-5 py-3 text-xs font-medium text-muted">
+                      Subject
+                    </th>
+                    <th className="px-5 py-3 text-xs font-medium text-muted">
+                      Status
+                    </th>
+                    <th className="px-5 py-3 text-xs font-medium text-muted">
+                      Date
+                    </th>
+                  </tr>
+                </thead>
 
-            <h4 className="mt-4 text-sm font-semibold text-ink">
-              No email activity yet
-            </h4>
+                <tbody>
+                  {emailActivities.map((activity) => (
+                    <tr
+                      key={activity.id}
+                      className="border-b border-line last:border-0"
+                    >
+                      <td className="px-5 py-4 text-sm text-ink sm:px-6">
+                        {activity.recipient}
+                      </td>
 
-            <p className="mx-auto mt-2 max-w-md text-xs leading-5 text-muted">
-              Sent messages and delivery records can appear here
-              after email sending and activity tracking are implemented.
-            </p>
-          </div>
+                      <td className="max-w-[220px] truncate px-5 py-4 text-sm text-ink">
+                        {activity.subject}
+                      </td>
+
+                      <td className="px-5 py-4">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-600 dark:text-green-400">
+                          <Check size={13} />
+                          {activity.status === "sent"
+                            ? "Sent"
+                            : activity.status}
+                        </span>
+                      </td>
+
+                      <td className="whitespace-nowrap px-5 py-4 text-xs text-muted">
+                        {new Date(
+                          activity.created_at
+                        ).toLocaleString("en-PK", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
       </div>
     </AppShell>

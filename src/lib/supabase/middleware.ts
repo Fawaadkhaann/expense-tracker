@@ -1,3 +1,4 @@
+
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -23,7 +24,9 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value),
           );
+
           supabaseResponse = NextResponse.next({ request });
+
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options),
           );
@@ -37,23 +40,34 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
+
+  // Let the email API handle its own authentication.
+  if (path === "/api/send-email") {
+    return supabaseResponse;
+  }
+
   const isAuthPage = path === "/login" || path === "/signup";
+
   const isPublic =
     path === "/" ||
     isAuthPage ||
     path.startsWith("/auth") ||
     path.startsWith("/setup");
 
+  // Protect private pages.
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", path);
+
     return NextResponse.redirect(url);
   }
 
+  // Redirect signed-in users away from login and signup.
   if (user && isAuthPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
+
     return NextResponse.redirect(url);
   }
 
