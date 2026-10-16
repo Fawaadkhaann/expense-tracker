@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import { MotionConfig, motion } from "motion/react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
@@ -154,35 +154,36 @@ export function Dashboard({
   }[alertLevel];
 
   const budgetCardClass =
-    "rounded-xl border border-line bg-canvas p-4 transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-md";
+    "rounded-2xl border border-line bg-canvas p-4 transition-[border-color,box-shadow] duration-200 hover:border-accent/30 hover:shadow-sm motion-reduce:transition-none";
 
   return (
-    <AppShell
-      activePath="/dashboard"
-      email={email}
-      actions={
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="ledger-button min-h-10 shrink-0 px-3 sm:px-4"
-        >
-          <Plus className="h-4 w-4" />
-          <span className="hidden sm:inline">Add expense</span>
-          <span className="sm:hidden">Add</span>
-        </button>
-      }
-    >
-      <div className="space-y-7">
+    <MotionConfig reducedMotion="user">
+      <AppShell
+        activePath="/dashboard"
+        email={email}
+        actions={
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="ledger-button min-h-10 shrink-0 px-3 sm:px-4"
+          >
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">Add expense</span>
+            <span className="sm:hidden">Add</span>
+          </button>
+        }
+      >
+      <div className="-mx-4 -my-6 space-y-8 bg-canvas px-4 py-6 sm:-mx-6 sm:-my-8 sm:space-y-10 sm:px-6 sm:py-8 xl:-mx-10 xl:px-10">
         {/* Animated welcome section */}
         <motion.section
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, ease: "easeOut" }}
-          className="relative isolate overflow-hidden rounded-2xl border border-line bg-card p-6 shadow-sm sm:p-8"
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="relative isolate overflow-hidden rounded-3xl border border-line bg-card p-6 text-ink shadow-sm sm:p-8 lg:p-9"
         >
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -right-12 -top-16 -z-10 h-56 w-56 rounded-full bg-accent-soft opacity-80 blur-3xl"
+            className="pointer-events-none absolute -right-12 -top-16 -z-10 h-56 w-56 rounded-full border-[24px] border-accent/5"
           />
 
           <div className="relative flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
@@ -195,10 +196,10 @@ export function Dashboard({
                   delay: 0.15,
                   ease: "easeOut",
                 }}
-                className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent-soft px-3 py-1.5"
+                className="inline-flex items-center gap-2 rounded-full border border-accent/15 bg-accent-soft px-3 py-1.5"
               >
                 <span className="h-2 w-2 rounded-full bg-accent" />
-                <p className="text-xs font-semibold tracking-wide text-accent">
+                <p className="text-xs font-semibold tracking-[0.1em] text-accent">
                   PERSONAL FINANCE
                 </p>
               </motion.div>
@@ -224,7 +225,7 @@ export function Dashboard({
                   delay: 0.3,
                   ease: "easeOut",
                 }}
-                className="mt-1 text-3xl font-semibold tracking-tight text-ink sm:text-4xl"
+                className="mt-1 text-3xl font-semibold tracking-tight text-ink sm:text-4xl lg:text-[2.75rem]"
               >
                 Welcome back
               </motion.h2>
@@ -280,9 +281,9 @@ export function Dashboard({
                 ease: "easeOut",
               }}
               aria-hidden="true"
-              className="hidden h-24 w-24 shrink-0 items-center justify-center rounded-3xl border border-accent/15 bg-accent-soft text-accent sm:flex"
+              className="hidden h-20 w-20 shrink-0 items-center justify-center rounded-2xl border border-line bg-canvas text-accent sm:flex lg:h-24 lg:w-24"
             >
-              <Wallet className="h-12 w-12" strokeWidth={1.5} />
+              <Wallet className="h-10 w-10" strokeWidth={1.5} />
             </motion.div>
           </div>
         </motion.section>
@@ -309,7 +310,13 @@ export function Dashboard({
             <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex min-w-0 items-start gap-4">
                 <div
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-accent-soft text-accent"
+                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
+                    alertLevel === "exceeded"
+                      ? "bg-danger-soft text-danger"
+                      : alertLevel === "critical" || alertLevel === "warning"
+                        ? "bg-warm-soft text-warm"
+                        : "bg-accent-soft text-accent"
+                  }`}
                   aria-hidden="true"
                 >
                   {alertLevel === "warning" ||
@@ -346,10 +353,7 @@ export function Dashboard({
                 </div>
               </div>
 
-              <Link
-                href="/budget"
-                className="ledger-button-secondary shrink-0"
-              >
+              <Link href="/budget" className="ledger-button-secondary shrink-0">
                 {hasMonthlyBudget ? "Manage budget" : "Set a budget"}
               </Link>
             </div>
@@ -359,7 +363,7 @@ export function Dashboard({
                 <p className="text-xs font-medium text-muted">
                   Monthly budget
                 </p>
-                <p className="mt-1.5 break-words text-lg font-bold text-ink">
+                <p className="mt-1.5 break-words text-lg font-semibold text-ink tabular-nums">
                   {hasMonthlyBudget
                     ? formatCurrency(monthlyBudget)
                     : "Not set"}
@@ -370,7 +374,7 @@ export function Dashboard({
                 <p className="text-xs font-medium text-muted">
                   Amount spent
                 </p>
-                <p className="mt-1.5 break-words text-lg font-bold text-ink">
+                <p className="mt-1.5 break-words text-lg font-semibold text-ink tabular-nums">
                   {formatCurrency(monthlySpending)}
                 </p>
               </div>
@@ -403,7 +407,7 @@ export function Dashboard({
                 <p className="text-xs font-medium text-muted">
                   Budget used
                 </p>
-                <p className="mt-1.5 break-words text-lg font-bold text-ink">
+                <p className="mt-1.5 break-words text-lg font-semibold text-ink tabular-nums">
                   {hasMonthlyBudget ? `${budgetUsed.toFixed(1)}%` : "—"}
                 </p>
               </div>
@@ -420,7 +424,7 @@ export function Dashboard({
                   aria-valuemax={100}
                 >
                   <div
-                    className="h-full rounded-full transition-[width] duration-500"
+                    className="h-full rounded-full transition-[width] duration-500 motion-reduce:transition-none"
                     style={{
                       width: `${Math.min(budgetUsed, 100)}%`,
                       backgroundColor:
@@ -451,7 +455,7 @@ export function Dashboard({
                 At a glance
               </p>
 
-              <h2 className="mt-1 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
                 Your finances
               </h2>
 
@@ -470,14 +474,14 @@ export function Dashboard({
         </section>
 
         {/* Monthly chart and expense filters */}
-        <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(20rem,0.85fr)]">
+        <div className="grid items-start gap-5 lg:gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(20rem,0.85fr)]">
           <div>
             <MonthlyChart expenses={expenses} />
           </div>
 
-          <section className="ledger-card p-5 transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-md sm:p-6">
+          <section className="ledger-card p-5 sm:p-6">
             <div className="mb-5 flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-white">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent">
                 <Receipt className="h-5 w-5" />
               </div>
 
@@ -486,7 +490,7 @@ export function Dashboard({
                   Your activity
                 </p>
 
-                <h2 className="mt-1 text-xl font-bold tracking-tight text-ink">
+                <h2 className="mt-1 text-xl font-semibold tracking-tight text-ink">
                   Find a transaction
                 </h2>
 
@@ -496,7 +500,11 @@ export function Dashboard({
               </div>
             </div>
 
-            <ExpenseFilters value={filters} onChange={setFilters} />
+            <ExpenseFilters
+              value={filters}
+              onChange={setFilters}
+              appearance="default"
+            />
           </section>
         </div>
 
@@ -508,7 +516,7 @@ export function Dashboard({
                 Transactions
               </p>
 
-              <h2 className="mt-1 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
                 Recent activity
               </h2>
 
@@ -543,6 +551,7 @@ export function Dashboard({
           <ExpenseForm onDone={() => setOpen(false)} />
         </Dialog>
       )}
-    </AppShell>
+      </AppShell>
+    </MotionConfig>
   );
 }

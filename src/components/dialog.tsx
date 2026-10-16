@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
+import { motion } from "motion/react";
 import { X } from "lucide-react";
 
 export function Dialog({
@@ -70,34 +71,40 @@ export function Dialog({
   }, []);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/50 p-3 backdrop-blur-sm sm:items-center sm:p-6"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.16 }}
+      className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/60 p-3 backdrop-blur-sm sm:items-center sm:p-6"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           onCloseRef.current();
         }
       }}
     >
-      <div
+      <motion.div
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="ledger-dialog-title"
         aria-describedby={description ? "ledger-dialog-description" : undefined}
-        className="flex max-h-[min(90dvh,48rem)] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-line bg-card shadow-2xl"
+        initial={{ opacity: 0, y: 12, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="flex max-h-[min(90dvh,48rem)] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-finance-line bg-finance-surface shadow-2xl shadow-slate-950/25"
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-line px-5 py-4 sm:px-6">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-finance-line px-5 py-4 sm:px-6">
           <div>
             <h2
               id="ledger-dialog-title"
-              className="text-lg font-semibold tracking-tight text-ink"
+              className="text-lg font-semibold tracking-tight text-finance-ink"
             >
               {title}
             </h2>
             {description && (
               <p
                 id="ledger-dialog-description"
-                className="mt-1 text-sm text-muted"
+                className="mt-1 text-sm text-finance-muted"
               >
                 {description}
               </p>
@@ -113,7 +120,7 @@ export function Dialog({
           </button>
         </div>
         <div className="overflow-y-auto p-5 sm:p-6">{children}</div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

@@ -36,20 +36,20 @@ export function ExpenseList({ expenses }: { expenses: Expense[] }) {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="rounded-2xl border border-dashed border-line bg-canvas/50 px-6 py-12 text-center"
+        className="rounded-3xl border border-dashed border-finance-line bg-finance-surface-raised px-6 py-14 text-center"
       >
         <div
-          className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-soft text-accent"
+          className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-finance-indigo-soft text-finance-indigo"
           aria-hidden="true"
         >
           <Pencil className="h-6 w-6" />
         </div>
 
-        <h3 className="font-semibold text-ink">
+        <h3 className="font-semibold text-finance-ink">
           No expenses found
         </h3>
 
-        <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted">
+        <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-finance-muted">
           No expenses match your current filters. Try changing the date range
           or category, or add a new expense.
         </p>
@@ -58,17 +58,17 @@ export function ExpenseList({ expenses }: { expenses: Expense[] }) {
   }
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-8">
       {grouped.map(([date, rows]) => (
         <section key={date} className="space-y-3">
           <div className="flex items-center gap-3">
-            <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-muted">
+            <h3 className="rounded-lg bg-finance-surface-raised px-3 py-1.5 text-xs font-semibold tracking-wide text-finance-muted">
               {formatDate(date)}
             </h3>
 
-            <div className="h-px flex-1 bg-line" />
+            <div className="h-px flex-1 bg-finance-line" />
 
-            <span className="rounded-full border border-line bg-card px-2.5 py-1 text-xs font-medium text-muted">
+            <span className="rounded-full border border-finance-line bg-finance-surface px-2.5 py-1 text-xs font-medium text-finance-muted">
               {rows.length} {rows.length === 1 ? "expense" : "expenses"}
             </span>
           </div>
@@ -85,12 +85,12 @@ export function ExpenseList({ expenses }: { expenses: Expense[] }) {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{
-                    duration: 0.3,
+                    duration: 0.24,
                     delay: Math.min(index * 0.04, 0.2),
                     ease: "easeOut",
                   }}
-                  whileHover={isEditing ? undefined : { y: -2 }}
-                  className="group rounded-2xl border border-line bg-card p-4 transition-[border-color,box-shadow] duration-200 hover:border-accent/30 hover:shadow-md sm:p-5 motion-reduce:transform-none motion-reduce:transition-none"
+                  whileHover={isEditing ? undefined : { y: -1 }}
+                  className="group rounded-2xl border border-finance-line bg-finance-surface p-4 shadow-sm shadow-slate-900/5 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-finance-indigo/30 hover:shadow-lg hover:shadow-indigo-950/5 sm:p-5 motion-reduce:transform-none motion-reduce:transition-none"
                 >
                   {isEditing ? (
                     <ExpenseForm
@@ -100,25 +100,28 @@ export function ExpenseList({ expenses }: { expenses: Expense[] }) {
                   ) : (
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                       <div className="flex min-w-0 flex-1 items-center gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-accent/10 bg-accent-soft text-accent">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-finance-indigo/15 bg-finance-indigo-soft text-finance-indigo">
                           <span className="text-sm font-bold">
                             {meta.label.slice(0, 1).toUpperCase()}
                           </span>
                         </div>
 
                         <div className="min-w-0 flex-1">
-                          <p className="break-words font-semibold leading-5 text-ink">
+                          <p className="break-words font-semibold leading-5 text-finance-ink">
                             {expense.description || meta.label}
                           </p>
 
-                          <span className="mt-1.5 inline-flex max-w-full rounded-full border border-line bg-canvas px-2.5 py-1 text-xs font-medium text-muted">
+                          <span
+                            data-category={expense.category}
+                            className="ledger-category-badge mt-2"
+                          >
                             {meta.label}
                           </span>
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between gap-3 sm:justify-end">
-                        <p className="break-words text-base font-bold tabular-nums text-ink sm:text-right">
+                        <p className="break-words text-base font-semibold tabular-nums text-finance-coral sm:text-right">
                           {formatCurrency(expense.amount)}
                         </p>
 
@@ -126,7 +129,7 @@ export function ExpenseList({ expenses }: { expenses: Expense[] }) {
                           <button
                             type="button"
                             onClick={() => setEditingId(expense.id)}
-                            className="ledger-icon-button transition-all duration-200 hover:scale-105 hover:bg-accent-soft hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                            className="ledger-icon-button transition-colors hover:bg-finance-indigo-soft hover:text-finance-indigo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-finance-indigo motion-reduce:transition-none"
                             aria-label={`Edit expense: ${expense.description || meta.label}`}
                             title="Edit expense"
                           >
@@ -156,7 +159,7 @@ export function ExpenseList({ expenses }: { expenses: Expense[] }) {
                                 }
                               });
                             }}
-                            className="ledger-icon-button transition-all duration-200 hover:scale-105 hover:bg-danger-soft hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:cursor-not-allowed disabled:opacity-50"
+                            className="ledger-icon-button transition-colors hover:bg-finance-coral-soft hover:text-finance-coral focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-finance-coral disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
                             aria-label={`Delete expense: ${expense.description || meta.label}`}
                             title={isDeleting ? "Deleting..." : "Delete expense"}
                           >

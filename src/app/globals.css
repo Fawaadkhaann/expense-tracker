@@ -15,11 +15,38 @@
   --danger: #b42335;
   --danger-soft: #fff0f0;
   --success: #087a55;
+  --success-soft: #e5f4ed;
   --chart-grid: #e1e9e4;
   --chart-text: #68776f;
   --chart-cursor: #f5f8f6;
   --chart-tooltip: #ffffff;
   --chart-tooltip-border: #e1e9e4;
+  --finance-canvas: #f3f6fc;
+  --finance-surface: #ffffff;
+  --finance-surface-raised: #f8faff;
+  --finance-line: #dfe7f2;
+  --finance-ink: #17243b;
+  --finance-muted: #65748d;
+  --finance-indigo: #4f46e5;
+  --finance-indigo-soft: #eef0ff;
+  --finance-blue: #2563eb;
+  --finance-cyan: #0891b2;
+  --finance-purple: #7c3aed;
+  --finance-emerald: #059669;
+  --finance-emerald-soft: #e8f8f1;
+  --finance-amber: #b45309;
+  --finance-amber-soft: #fff5df;
+  --finance-coral: #e11d48;
+  --finance-coral-soft: #fff0f2;
+  --finance-slate: #64748b;
+  --finance-slate-soft: #eef2f7;
+  --nav-surface: #111a31;
+  --nav-text: #f4f6ff;
+  --nav-muted: #aab5d0;
+  --nav-border: #293451;
+  --nav-hover: #1d2946;
+  --chart-primary: #4f46e5;
+  --chart-secondary: #06b6d4;
 }
 
 :root[data-theme="dark"] {
@@ -37,11 +64,38 @@
   --danger: #ff8b91;
   --danger-soft: #402328;
   --success: #55c998;
+  --success-soft: #1d382d;
   --chart-grid: #2b3931;
   --chart-text: #a3b1a9;
   --chart-cursor: #202d26;
   --chart-tooltip: #17221d;
   --chart-tooltip-border: #394a40;
+  --finance-canvas: #0c1424;
+  --finance-surface: #121d31;
+  --finance-surface-raised: #18253b;
+  --finance-line: #293851;
+  --finance-ink: #eef3ff;
+  --finance-muted: #a4b2ca;
+  --finance-indigo: #a5a9ff;
+  --finance-indigo-soft: #252750;
+  --finance-blue: #7ca8ff;
+  --finance-cyan: #56d5ea;
+  --finance-purple: #c2a2ff;
+  --finance-emerald: #5bd6a4;
+  --finance-emerald-soft: #163a36;
+  --finance-amber: #ffbf66;
+  --finance-amber-soft: #40341f;
+  --finance-coral: #ff8ca2;
+  --finance-coral-soft: #442638;
+  --finance-slate: #b3c0d2;
+  --finance-slate-soft: #28354a;
+  --nav-surface: #090f1d;
+  --nav-text: #f4f6ff;
+  --nav-muted: #aab5d0;
+  --nav-border: #202b42;
+  --nav-hover: #151f34;
+  --chart-primary: #9699ff;
+  --chart-secondary: #48d1e7;
 }
 
 @theme inline {
@@ -52,11 +106,37 @@
   --color-line: var(--line);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
+  --color-accent-contrast: var(--accent-contrast);
   --color-warm: var(--warm);
   --color-warm-soft: var(--warm-soft);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-finance-canvas: var(--finance-canvas);
+  --color-finance-surface: var(--finance-surface);
+  --color-finance-surface-raised: var(--finance-surface-raised);
+  --color-finance-line: var(--finance-line);
+  --color-finance-ink: var(--finance-ink);
+  --color-finance-muted: var(--finance-muted);
+  --color-finance-indigo: var(--finance-indigo);
+  --color-finance-indigo-soft: var(--finance-indigo-soft);
+  --color-finance-blue: var(--finance-blue);
+  --color-finance-cyan: var(--finance-cyan);
+  --color-finance-purple: var(--finance-purple);
+  --color-finance-emerald: var(--finance-emerald);
+  --color-finance-emerald-soft: var(--finance-emerald-soft);
+  --color-finance-amber: var(--finance-amber);
+  --color-finance-amber-soft: var(--finance-amber-soft);
+  --color-finance-coral: var(--finance-coral);
+  --color-finance-coral-soft: var(--finance-coral-soft);
+  --color-finance-slate: var(--finance-slate);
+  --color-finance-slate-soft: var(--finance-slate-soft);
+  --color-nav-surface: var(--nav-surface);
+  --color-nav-text: var(--nav-text);
+  --color-nav-muted: var(--nav-muted);
+  --color-nav-border: var(--nav-border);
+  --color-nav-hover: var(--nav-hover);
   --font-sans: var(--font-outfit);
 }
 
@@ -88,7 +168,7 @@ textarea {
 
 @layer components {
   .ledger-card {
-    @apply rounded-2xl border border-line bg-card shadow-sm;
+    @apply rounded-2xl border border-line bg-card shadow-sm transition-[border-color,box-shadow] duration-200 motion-reduce:transition-none;
   }
 
   .ledger-field {
@@ -114,6 +194,62 @@ textarea {
 
   .ledger-warning {
     @apply rounded-xl border border-warm/20 bg-warm-soft px-3.5 py-3 text-sm text-warm;
+  }
+
+  .ledger-success {
+    @apply rounded-xl border border-success/20 bg-success-soft px-3.5 py-3 text-sm text-success;
+  }
+
+  .ledger-category-badge {
+    @apply inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-xs font-semibold;
+  }
+
+  .ledger-category-badge[data-category="food"] {
+    color: var(--finance-coral);
+    background: var(--finance-coral-soft);
+    border-color: color-mix(in srgb, var(--finance-coral) 18%, transparent);
+  }
+
+  .ledger-category-badge[data-category="transport"] {
+    color: var(--finance-blue);
+    background: color-mix(in srgb, var(--finance-blue) 12%, transparent);
+    border-color: color-mix(in srgb, var(--finance-blue) 18%, transparent);
+  }
+
+  .ledger-category-badge[data-category="shopping"] {
+    color: var(--finance-purple);
+    background: color-mix(in srgb, var(--finance-purple) 12%, transparent);
+    border-color: color-mix(in srgb, var(--finance-purple) 18%, transparent);
+  }
+
+  .ledger-category-badge[data-category="bills"] {
+    color: var(--finance-amber);
+    background: var(--finance-amber-soft);
+    border-color: color-mix(in srgb, var(--finance-amber) 18%, transparent);
+  }
+
+  .ledger-category-badge[data-category="entertainment"] {
+    color: var(--finance-cyan);
+    background: color-mix(in srgb, var(--finance-cyan) 12%, transparent);
+    border-color: color-mix(in srgb, var(--finance-cyan) 18%, transparent);
+  }
+
+  .ledger-category-badge[data-category="health"] {
+    color: var(--finance-emerald);
+    background: var(--finance-emerald-soft);
+    border-color: color-mix(in srgb, var(--finance-emerald) 18%, transparent);
+  }
+
+  .ledger-category-badge[data-category="education"] {
+    color: var(--finance-indigo);
+    background: var(--finance-indigo-soft);
+    border-color: color-mix(in srgb, var(--finance-indigo) 18%, transparent);
+  }
+
+  .ledger-category-badge[data-category="other"] {
+    color: var(--finance-slate);
+    background: var(--finance-slate-soft);
+    border-color: color-mix(in srgb, var(--finance-slate) 18%, transparent);
   }
 }
 

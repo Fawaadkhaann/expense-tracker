@@ -173,8 +173,8 @@ export default async function ReportsPage() {
                         </span>
                       </div>
 
-                      <div className="text-right">
-                        <p className="text-sm font-bold tabular-nums text-ink">
+                      <div className="min-w-0 max-w-full text-right">
+                        <p className="break-words text-sm font-bold tabular-nums text-ink">
                           {formatCurrency(amount)}
                         </p>
 
@@ -207,7 +207,7 @@ export default async function ReportsPage() {
         <AnimatedReportSection
           delay={0.15}
           hover
-          className="ledger-card flex flex-col gap-5 p-5 transition-shadow duration-200 hover:shadow-md sm:flex-row sm:items-center sm:justify-between sm:p-6"
+          className="ledger-card flex flex-col gap-5 p-5 transition-shadow duration-200 hover:shadow-md xl:flex-row xl:items-center xl:justify-between sm:p-6"
         >
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent">

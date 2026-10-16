@@ -70,7 +70,7 @@ export default function EmailComposer() {
       <div>
         <label
           htmlFor="email-to"
-          className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="mb-2 block text-sm font-medium text-ink"
         >
           Recipient Email
         </label>
@@ -85,14 +85,14 @@ export default function EmailComposer() {
           placeholder="recipient@example.com"
           maxLength={254}
           required
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+          className="ledger-field"
         />
       </div>
 
       <div>
         <label
           htmlFor="email-subject"
-          className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="mb-2 block text-sm font-medium text-ink"
         >
           Subject
         </label>
@@ -107,14 +107,14 @@ export default function EmailComposer() {
           placeholder="Enter email subject"
           maxLength={200}
           required
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+          className="ledger-field"
         />
       </div>
 
       <div>
         <label
           htmlFor="email-message"
-          className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="mb-2 block text-sm font-medium text-ink"
         >
           Message
         </label>
@@ -128,14 +128,14 @@ export default function EmailComposer() {
           maxLength={10000}
           rows={6}
           required
-          className="w-full resize-y rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+          className="ledger-field min-h-36 resize-y"
         />
       </div>
 
       {status && (
         <p
           role="status"
-          className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
+          className="ledger-success flex items-center gap-2"
         >
           <CheckCircle size={18} />
           {status}
@@ -145,7 +145,7 @@ export default function EmailComposer() {
       {error && (
         <p
           role="alert"
-          className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400"
+          className="ledger-error flex items-center gap-2"
         >
           <AlertCircle size={18} />
           {error}
@@ -155,7 +155,7 @@ export default function EmailComposer() {
       <button
         type="submit"
         disabled={loading}
-        className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+        className="ledger-button px-5"
       >
         {loading ? (
           <>

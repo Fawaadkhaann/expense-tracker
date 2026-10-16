@@ -86,35 +86,35 @@ export function BudgetPage({
         <section className="grid gap-4 sm:grid-cols-3">
 
           {/* Budget */}
-          <div className="ledger-card p-5">
+          <div className="ledger-card min-w-0 p-5">
             <p className="text-sm font-medium text-muted">
               Monthly Budget
             </p>
 
-            <p className="mt-2 text-2xl font-semibold">
+            <p className="mt-2 break-words text-2xl font-semibold tabular-nums">
               {formatCurrency(budgetAmount)}
             </p>
           </div>
 
           {/* Spent */}
-          <div className="ledger-card p-5">
+          <div className="ledger-card min-w-0 p-5">
             <p className="text-sm font-medium text-muted">
               Total Spent
             </p>
 
-            <p className="mt-2 text-2xl font-semibold">
+            <p className="mt-2 break-words text-2xl font-semibold tabular-nums">
               {formatCurrency(totalSpent)}
             </p>
           </div>
 
           {/* Remaining */}
-          <div className="ledger-card p-5">
+          <div className="ledger-card min-w-0 p-5">
             <p className="text-sm font-medium text-muted">
               Remaining
             </p>
 
             <p
-              className={`mt-2 text-2xl font-semibold ${
+              className={`mt-2 break-words text-2xl font-semibold tabular-nums ${
                 remaining < 0 ? "text-danger" : ""
               }`}
             >
@@ -128,8 +128,8 @@ export function BudgetPage({
         {budgetAmount > 0 && (
           <section className="ledger-card p-6">
 
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
                 <h2 className="font-semibold">
                   Budget Progress
                 </h2>
@@ -139,7 +139,7 @@ export function BudgetPage({
                 </p>
               </div>
 
-              <span className="text-sm font-medium">
+              <span className="break-words text-sm font-medium tabular-nums sm:text-right">
                 {formatCurrency(totalSpent)} / {formatCurrency(budgetAmount)}
               </span>
             </div>
@@ -204,7 +204,7 @@ export function BudgetPage({
                   onChange={(event) =>
                     setAmount(event.target.value)
                   }
-                  className="w-full bg-transparent px-3 py-3 text-ink outline-none placeholder:text-muted"
+                  className="min-w-0 w-full bg-transparent px-3 py-3 text-ink outline-none placeholder:text-muted"
                 />
               </div>
             </div>

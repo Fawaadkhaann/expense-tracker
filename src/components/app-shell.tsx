@@ -90,7 +90,7 @@ export function AppShell({
         <AppSidebar activePath={activePath} email={email} />
 
         <div className="flex min-h-screen min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-30 border-b border-line bg-card/95 backdrop-blur-xl">
+          <header className="sticky top-0 z-30 border-b border-line bg-card/90 backdrop-blur-xl">
             <div className="mx-auto flex min-h-[4.5rem] w-full max-w-[1600px] items-center justify-between gap-3 px-4 py-3 sm:px-6 xl:px-10">
               <div className="flex min-w-0 items-center gap-3">
                 <button
@@ -99,8 +99,9 @@ export function AppShell({
                   onClick={() => setMenuOpen(true)}
                   className="ledger-icon-button shrink-0 border border-line bg-canvas text-ink lg:hidden"
                   aria-label="Open navigation menu"
+                  aria-haspopup="dialog"
                   aria-expanded={menuOpen}
-                  aria-controls="mobile-navigation"
+                  aria-controls={menuOpen ? "mobile-navigation" : undefined}
                 >
                   <Menu className="h-5 w-5" />
                 </button>

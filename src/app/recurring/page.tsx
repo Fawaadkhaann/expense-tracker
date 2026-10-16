@@ -81,21 +81,21 @@ export default async function RecurringPage() {
                 Payments due within the next 7 days.
               </p>
 
-              <div className="mt-4 flex flex-wrap gap-6">
-                <div>
+              <div className="mt-4 flex min-w-0 flex-wrap gap-6">
+                <div className="min-w-0">
                   <p className="text-sm text-muted">
                     Upcoming payments
                   </p>
-                  <p className="mt-1 text-2xl font-semibold tabular-nums">
+                  <p className="mt-1 break-words text-2xl font-semibold tabular-nums">
                     {upcomingExpenses.length}
                   </p>
                 </div>
 
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm text-muted">
                     Total upcoming amount
                   </p>
-                  <p className="mt-1 text-2xl font-semibold tabular-nums">
+                  <p className="mt-1 break-words text-2xl font-semibold tabular-nums">
                     {formatCurrency(upcomingTotal)}
                   </p>
                 </div>
@@ -148,7 +148,7 @@ export default async function RecurringPage() {
                       </div>
                     </div>
 
-                    <p className="pl-8 text-base font-semibold tabular-nums sm:pl-0">
+                    <p className="break-words pl-8 text-base font-semibold tabular-nums sm:pl-0">
                       {formatCurrency(expense.amount)}
                     </p>
                   </div>
@@ -209,7 +209,7 @@ export default async function RecurringPage() {
                   </div>
 
                   <div className="flex items-center justify-between gap-4 sm:justify-end">
-                    <p className="text-lg font-semibold tabular-nums">
+                    <p className="min-w-0 break-words text-lg font-semibold tabular-nums">
                       {formatCurrency(expense.amount)}
                     </p>
 

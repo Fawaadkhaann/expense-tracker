@@ -67,7 +67,7 @@ export default async function NotificationsPage() {
           </div>
 
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-line bg-card px-3.5 py-2 text-xs font-medium text-muted">
-            <span className="h-2 w-2 rounded-full bg-green-500" />
+            <span className="h-2 w-2 rounded-full bg-success" />
             Email service connected
           </div>
         </section>
@@ -129,13 +129,13 @@ export default async function NotificationsPage() {
         {/* Email composer and setup panel */}
         <section className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
           <div className="ledger-card overflow-hidden">
-            <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-5 sm:px-7">
-              <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-start justify-between gap-3 border-b border-line px-5 py-5 sm:px-7">
+              <div className="flex min-w-0 items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-white">
                   <Mail size={19} />
                 </div>
 
-                <div>
+                <div className="min-w-0">
                   <h3 className="text-base font-semibold text-ink">
                     Compose an email
                   </h3>
@@ -145,8 +145,8 @@ export default async function NotificationsPage() {
                 </div>
               </div>
 
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1.5 text-xs text-muted">
-                <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+              <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line px-2.5 py-1.5 text-xs text-muted">
+                <span className="h-1.5 w-1.5 rounded-full bg-success" />
                 Ready to send
               </span>
             </div>
@@ -178,7 +178,7 @@ export default async function NotificationsPage() {
                 <div className="flex items-start gap-3">
                   <Check
                     size={16}
-                    className="mt-0.5 shrink-0 text-green-500"
+                    className="mt-0.5 shrink-0 text-success"
                   />
                   <div>
                     <p className="text-sm font-medium text-ink">
@@ -211,7 +211,7 @@ export default async function NotificationsPage() {
                   <span className="text-xs text-muted">
                     Integration status
                   </span>
-                  <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+                  <span className="text-xs font-semibold text-success">
                     Configured
                   </span>
                 </div>
@@ -265,7 +265,7 @@ export default async function NotificationsPage() {
             <div className="px-5 py-10 text-center">
               <AlertCircle
                 size={22}
-                className="mx-auto text-red-500"
+                className="mx-auto text-danger"
               />
               <p className="mt-3 text-sm font-medium text-ink">
                 Could not load email activity
@@ -289,7 +289,12 @@ export default async function NotificationsPage() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div
+              className="overflow-x-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              role="region"
+              aria-label="Email activity table"
+              tabIndex={0}
+            >
               <table className="w-full min-w-[600px] text-left">
                 <thead>
                   <tr className="border-b border-line bg-canvas/60">
@@ -323,7 +328,7 @@ export default async function NotificationsPage() {
                       </td>
 
                       <td className="px-5 py-4">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-600 dark:text-green-400">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-success-soft px-2.5 py-1 text-xs font-medium text-success">
                           <Check size={13} />
                           {activity.status === "sent"
                             ? "Sent"

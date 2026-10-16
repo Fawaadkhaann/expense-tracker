@@ -632,16 +632,16 @@ export default async function AnalyticsPage() {
                 return (
                   <div key={category}>
                     <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                      <div className="flex items-center gap-2.5">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-line bg-canvas text-xs font-bold text-accent">
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-line bg-canvas text-xs font-bold text-accent">
                           {categoryLabel.slice(0, 1).toUpperCase()}
                         </span>
                         <span className="font-medium text-ink">
                           {categoryLabel}
                         </span>
                       </div>
-                      <div className="text-right">
-                        <span className="font-semibold text-ink">
+                      <div className="min-w-0 max-w-full text-right">
+                        <span className="break-words font-semibold text-ink">
                           {formatCurrency(amount)}
                         </span>
                         <span className="ml-2 text-sm text-muted">

@@ -54,26 +54,26 @@ export function AppSidebar({
 }) {
   return (
     <aside
-      className={`flex w-64 shrink-0 flex-col bg-card ${
+      className={`flex w-64 shrink-0 flex-col bg-nav-surface text-nav-text ${
         mobile
-          ? "h-full border-r border-line shadow-2xl"
-          : "sticky top-0 hidden h-dvh border-r border-line lg:flex"
+          ? "h-full border-r border-nav-border shadow-2xl"
+          : "sticky top-0 hidden h-dvh border-r border-nav-border lg:flex"
       }`}
       aria-label="Main navigation"
     >
       {/* Logo */}
-      <div className="flex h-[4.5rem] shrink-0 items-center justify-between border-b border-line px-5">
+      <div className="flex h-[4.5rem] shrink-0 items-center justify-between border-b border-nav-border px-5">
         <Link
           href="/dashboard"
           onClick={onNavigate}
           className="group flex items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-white shadow-sm">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-finance-indigo to-finance-cyan text-white shadow-sm">
             <Wallet className="h-[18px] w-[18px]" />
           </span>
 
-          <span className="text-[17px] font-semibold tracking-tight text-ink">
-            Ledger<span className="text-accent">.</span>
+          <span className="text-[17px] font-semibold tracking-tight text-nav-text">
+            Ledger<span className="text-finance-cyan">.</span>
           </span>
         </Link>
 
@@ -81,7 +81,7 @@ export function AppSidebar({
           <button
             type="button"
             onClick={onClose}
-            className="ledger-icon-button"
+            className="ledger-icon-button text-nav-muted hover:bg-nav-hover hover:text-nav-text focus-visible:ring-finance-cyan"
             aria-label="Close navigation menu"
           >
             <X className="h-5 w-5" />
@@ -93,7 +93,7 @@ export function AppSidebar({
       <nav className="flex-1 space-y-7 overflow-y-auto px-3 py-6">
         {navigationGroups.map((group) => (
           <div key={group.label}>
-            <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted">
+            <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-nav-muted">
               {group.label}
             </p>
 
@@ -108,10 +108,10 @@ export function AppSidebar({
                     href={item.href}
                     onClick={onNavigate}
                     aria-current={active ? "page" : undefined}
-                    className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent motion-reduce:transition-none ${
+                    className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-finance-cyan motion-reduce:transition-none ${
                       active
-                        ? "bg-accent-soft text-accent"
-                        : "text-muted hover:bg-canvas hover:text-ink"
+                        ? "bg-white/10 text-white ring-1 ring-inset ring-white/10"
+                        : "text-nav-muted hover:bg-nav-hover hover:text-nav-text"
                     }`}
                   >
                     <Icon className="h-[18px] w-[18px] shrink-0" />
@@ -121,7 +121,7 @@ export function AppSidebar({
                     {active && (
                       <span
                         aria-hidden="true"
-                        className="ml-auto h-1.5 w-1.5 rounded-full bg-accent"
+                        className="ml-auto h-1.5 w-1.5 rounded-full bg-finance-cyan"
                       />
                     )}
                   </Link>
@@ -133,19 +133,19 @@ export function AppSidebar({
       </nav>
 
       {/* Account and Logout */}
-      <div className="shrink-0 border-t border-line p-3">
-        <div className="mb-2 flex min-w-0 items-center gap-3 rounded-xl bg-canvas p-3">
+      <div className="shrink-0 border-t border-nav-border p-3">
+        <div className="mb-2 flex min-w-0 items-center gap-3 rounded-xl bg-nav-hover p-3">
           <div
             aria-hidden="true"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-soft text-sm font-semibold text-accent"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-finance-cyan"
           >
             {email ? email.charAt(0).toUpperCase() : "U"}
           </div>
 
           <div className="min-w-0">
-            <p className="text-xs font-medium text-muted">Signed in as</p>
+            <p className="text-xs font-medium text-nav-muted">Signed in as</p>
 
-            <p className="truncate text-sm font-semibold text-ink">
+            <p className="truncate text-sm font-semibold text-nav-text">
               {email || "Your account"}
             </p>
           </div>
@@ -154,7 +154,7 @@ export function AppSidebar({
         <form action={signOut}>
           <button
             type="submit"
-            className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-sm font-medium text-muted transition-colors hover:bg-danger-soft hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent motion-reduce:transition-none"
+            className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-sm font-medium text-nav-muted transition-colors hover:bg-rose-500/10 hover:text-rose-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-finance-cyan motion-reduce:transition-none"
           >
             <LogOut className="h-[18px] w-[18px]" />
             Log out

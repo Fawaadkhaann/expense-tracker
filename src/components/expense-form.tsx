@@ -35,11 +35,11 @@ export function ExpenseForm({
   }, [state, onDone, router]);
 
   return (
-    <form ref={formRef} action={formAction} className="grid gap-4">
+    <form ref={formRef} action={formAction} className="grid gap-5">
       {expense ? <input type="hidden" name="id" value={expense.id} /> : null}
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="space-y-1.5">
-          <span className="text-sm text-muted">Amount</span>
+          <span className="text-sm font-medium text-ink">Amount</span>
           <input
             required
             name="amount"
@@ -48,27 +48,27 @@ export function ExpenseForm({
             step="0.01"
             defaultValue={expense?.amount}
             placeholder="0.00"
-            className="ledger-field"
+            className="ledger-field border-finance-line bg-finance-surface-raised text-finance-ink placeholder:text-finance-muted focus:border-finance-indigo focus:ring-finance-indigo/20"
           />
         </label>
         <label className="space-y-1.5">
-          <span className="text-sm text-muted">Date</span>
+          <span className="text-sm font-medium text-ink">Date</span>
           <input
             required
             name="expense_date"
             type="date"
             defaultValue={expense?.expense_date ?? todayISO()}
-            className="ledger-field"
+            className="ledger-field border-finance-line bg-finance-surface-raised text-finance-ink focus:border-finance-indigo focus:ring-finance-indigo/20"
           />
         </label>
       </div>
       <label className="space-y-1.5">
-        <span className="text-sm text-muted">Category</span>
+        <span className="text-sm font-medium text-ink">Category</span>
         <select
           required
           name="category"
           defaultValue={expense?.category ?? "food"}
-          className="ledger-field"
+          className="ledger-field border-finance-line bg-finance-surface-raised text-finance-ink focus:border-finance-indigo focus:ring-finance-indigo/20"
         >
           {CATEGORIES.map((category) => (
             <option key={category} value={category}>
@@ -78,12 +78,12 @@ export function ExpenseForm({
         </select>
       </label>
       <label className="space-y-1.5">
-        <span className="text-sm text-muted">Description</span>
+        <span className="text-sm font-medium text-ink">Description</span>
         <input
           name="description"
           defaultValue={expense?.description ?? ""}
           placeholder="Lunch, train ticket, new shoes…"
-          className="ledger-field"
+          className="ledger-field border-finance-line bg-finance-surface-raised text-finance-ink placeholder:text-finance-muted focus:border-finance-indigo focus:ring-finance-indigo/20"
         />
       </label>
       {state?.error ? (
@@ -94,7 +94,7 @@ export function ExpenseForm({
       <button
         type="submit"
         disabled={pending}
-        className="ledger-button"
+        className="ledger-button w-full sm:w-auto"
       >
         {pending
           ? "Saving…"

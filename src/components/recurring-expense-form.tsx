@@ -120,7 +120,7 @@ export function RecurringExpenseForm() {
               placeholder="1500"
               value={amount}
               onChange={(event) => setAmount(event.target.value)}
-              className="w-full bg-transparent px-3 py-3 text-ink outline-none placeholder:text-muted"
+              className="min-w-0 w-full bg-transparent px-3 py-3 text-ink outline-none placeholder:text-muted"
             />
           </div>
         </div>

@@ -17,15 +17,26 @@ export type Filters = {
 export function ExpenseFilters({
   value,
   onChange,
+  appearance = "default",
 }: {
   value: Filters;
   onChange: (next: Filters) => void;
+  appearance?: "default" | "workspace";
 }) {
+  const workspace = appearance === "workspace";
+  const labelClass = workspace
+    ? "text-xs font-semibold uppercase tracking-wide text-finance-muted"
+    : "text-sm text-muted";
+  const labelSpacingClass = workspace ? "space-y-2" : "space-y-1.5";
+  const fieldSurfaceClass = workspace
+    ? "border-finance-line bg-finance-surface-raised text-finance-ink placeholder:text-finance-muted focus:border-finance-indigo focus:ring-finance-indigo/20"
+    : "";
+
   return (
-    <div className="space-y-4">
+    <div className={workspace ? "space-y-5" : "space-y-4"}>
       {/* Search */}
-      <label className="block space-y-1.5">
-        <span className="text-sm text-muted">
+      <label className={`block ${labelSpacingClass}`}>
+        <span className={labelClass}>
           Search expenses
         </span>
 
@@ -42,7 +53,9 @@ export function ExpenseFilters({
                 search: event.target.value,
               })
             }
-            className="ledger-field py-2.5 pl-10 pr-3"
+            className={`ledger-field ${
+              workspace ? "py-3" : "py-2.5"
+            } pl-10 pr-3 ${fieldSurfaceClass}`}
           />
         </div>
       </label>
@@ -50,8 +63,8 @@ export function ExpenseFilters({
       {/* Filters */}
       <div className="grid gap-3 sm:grid-cols-3">
         {/* Category */}
-        <label className="block space-y-1.5">
-          <span className="text-sm text-muted">
+        <label className={`block ${labelSpacingClass}`}>
+          <span className={labelClass}>
             Category
           </span>
 
@@ -63,7 +76,7 @@ export function ExpenseFilters({
                 category: event.target.value as Filters["category"],
               })
             }
-            className="ledger-field px-3 py-2.5"
+            className={`ledger-field px-3 py-2.5 ${fieldSurfaceClass}`}
           >
             <option value="all">All categories</option>
 
@@ -76,8 +89,8 @@ export function ExpenseFilters({
         </label>
 
         {/* From */}
-        <label className="block space-y-1.5">
-          <span className="text-sm text-muted">
+        <label className={`block ${labelSpacingClass}`}>
+          <span className={labelClass}>
             From
           </span>
 
@@ -90,13 +103,13 @@ export function ExpenseFilters({
                 from: event.target.value,
               })
             }
-            className="ledger-field px-3 py-2.5"
+            className={`ledger-field px-3 py-2.5 ${fieldSurfaceClass}`}
           />
         </label>
 
         {/* To */}
-        <label className="block space-y-1.5">
-          <span className="text-sm text-muted">
+        <label className={`block ${labelSpacingClass}`}>
+          <span className={labelClass}>
             To
           </span>
 
@@ -109,7 +122,7 @@ export function ExpenseFilters({
                 to: event.target.value,
               })
             }
-            className="ledger-field px-3 py-2.5"
+            className={`ledger-field px-3 py-2.5 ${fieldSurfaceClass}`}
           />
         </label>
       </div>
