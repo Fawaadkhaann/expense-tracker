@@ -4,12 +4,14 @@
 import Link from "next/link";
 import {
   BarChart3,
+  CreditCard,
   FileText,
   LayoutDashboard,
   LogOut,
   Mail,
   Receipt,
   Repeat,
+  Settings,
   Wallet,
   X,
 } from "lucide-react";
@@ -27,6 +29,7 @@ const navigationGroups = [
     label: "Manage",
     links: [
       { label: "Expenses", href: "/expenses", icon: Receipt },
+      { label: "Demo Checkout", href: "/checkout", icon: CreditCard },
       { label: "Budget", href: "/budget", icon: Wallet },
       {
         label: "Recurring expenses",
@@ -35,6 +38,7 @@ const navigationGroups = [
       },
       { label: "Reports", href: "/reports", icon: FileText },
       { label: "Email Center", href: "/notifications", icon: Mail },
+      { label: "Settings", href: "/settings", icon: Settings },
     ],
   },
 ];

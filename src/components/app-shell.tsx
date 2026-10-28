@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import { Menu, Moon, Sun } from "lucide-react";
 import { AppSidebar } from "@/components/app-sidebar";
+import { getTheme, setTheme } from "@/lib/theme";
 
 const pageLabels: Record<string, string> = {
   "/notifications": "Email Center",
@@ -13,6 +14,7 @@ const pageLabels: Record<string, string> = {
   "/recurring": "Recurring expenses",
   "/analytics": "Analytics",
   "/reports": "Reports",
+  "/settings": "Settings",
 };
 
 export function AppShell({
@@ -74,14 +76,7 @@ export function AppShell({
   }, [menuOpen]);
 
   function toggleTheme() {
-    const nextTheme =
-      document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = nextTheme;
-    try {
-      localStorage.setItem("ledger-theme", nextTheme);
-    } catch {
-      // Keep the current page theme if browser storage is unavailable.
-    }
+    setTheme(getTheme() === "dark" ? "light" : "dark");
   }
 
   return (

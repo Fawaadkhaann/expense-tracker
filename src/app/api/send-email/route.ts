@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { resend } from "@/lib/resend";
+import { limitUserEmailSends } from "@/lib/email-rate-limit";
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
@@ -16,6 +17,14 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Please log in to send emails." },
         { status: 401 },
+      );
+    }
+
+    const from = process.env.RESEND_FROM_EMAIL?.trim();
+    if (!from) {
+      return NextResponse.json(
+        { error: "Email sending is not configured with a verified sender." },
+        { status: 503 },
       );
     }
 
@@ -43,9 +52,45 @@ export async function POST(request: Request) {
       );
     }
 
+    let rateLimit: Awaited<ReturnType<typeof limitUserEmailSends>>;
+    try {
+      rateLimit = await limitUserEmailSends(user.id);
+    } catch (error) {
+      console.error("Email rate-limit service error:", error);
+
+      return NextResponse.json(
+        { error: "Email sending is temporarily unavailable." },
+        { status: 503 },
+      );
+    }
+
+    const rateLimitHeaders = {
+      "X-RateLimit-Limit": String(rateLimit.limit),
+      "X-RateLimit-Remaining": String(rateLimit.remaining),
+      "X-RateLimit-Reset": String(Math.ceil(rateLimit.reset / 1000)),
+    };
+
+    if (!rateLimit.success) {
+      const retryAfter = Math.max(
+        1,
+        Math.ceil((rateLimit.reset - Date.now()) / 1000),
+      );
+
+      return NextResponse.json(
+        { error: "Email limit reached. Try again after the rate limit resets." },
+        {
+          status: 429,
+          headers: {
+            ...rateLimitHeaders,
+            "Retry-After": String(retryAfter),
+          },
+        },
+      );
+    }
+
     // Send email through Resend
     const result = await resend.emails.send({
-      from: "Ledger <onboarding@resend.dev>",
+      from,
       to: [to.trim()],
       subject: subject.trim(),
       text: message,
@@ -59,7 +104,7 @@ export async function POST(request: Request) {
           error:
             "Email could not be sent. Please check your Resend setup.",
         },
-        { status: 502 },
+        { status: 502, headers: rateLimitHeaders },
       );
     }
 
@@ -77,22 +122,28 @@ export async function POST(request: Request) {
     if (saveError) {
       console.error("Email activity save error:", saveError);
 
-      return NextResponse.json({
-        success: true,
-        message:
-          "Email sent, but its activity could not be saved.",
-        id: result.data?.id,
-        activitySaved: false,
-      });
+      return NextResponse.json(
+        {
+          success: true,
+          message:
+            "Email sent, but its activity could not be saved.",
+          id: result.data?.id,
+          activitySaved: false,
+        },
+        { headers: rateLimitHeaders },
+      );
     }
 
     // Return success
-    return NextResponse.json({
-      success: true,
-      message: "Email sent successfully.",
-      id: result.data?.id,
-      activitySaved: true,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Email sent successfully.",
+        id: result.data?.id,
+        activitySaved: true,
+      },
+      { headers: rateLimitHeaders },
+    );
   } catch (error) {
     console.error("Email API error:", error);
 

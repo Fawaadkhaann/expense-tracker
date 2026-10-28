@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getSafeRedirectPath } from "@/lib/safe-redirect";
 
 export type AuthState = { error?: string; message?: string } | undefined;
 
@@ -21,7 +22,7 @@ export async function signIn(_prev: AuthState, formData: FormData) {
     return { error: error.message };
   }
 
-  redirect(next.startsWith("/") ? next : "/dashboard");
+  redirect(getSafeRedirectPath(next));
 }
 
 export async function signUp(_prev: AuthState, formData: FormData) {

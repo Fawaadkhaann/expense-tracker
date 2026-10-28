@@ -50,6 +50,7 @@ export async function updateSession(request: NextRequest) {
 
   const isPublic =
     path === "/" ||
+    path === "/checkout" ||
     isAuthPage ||
     path.startsWith("/auth") ||
     path.startsWith("/setup");
